@@ -6,7 +6,7 @@ import name.panitz.game.framework.Vertex;
 import java.util.List;
 
 public class LevelBuilder<I> {
-	public void makeLvl(Player<I> p, List<GameObject<I>> items, List<LevelBlock<I>> fg, List<LevelBlock<I>> cb, List<LevelBlock<I>> bg, Vertex size) {
+	public void makeLvl(Player<I> p, List<GameObject<I>> items, List<LevelBlock<I>> fg, List<LevelBlock<I>> cb, List<LevelBlock<I>> bg, List<PushableBlock<I>> pushables, Vertex size) {
 		// background
 		for (int gameX = 0; gameX < size.x; gameX++) {
 			for (int gameY = 0; gameY < size.y; gameY++) {
@@ -40,8 +40,8 @@ public class LevelBuilder<I> {
 //		fg.add(new LevelBlock<>(0, new Vertex(16*8,size.y*16-16-32),new Vertex(0,0),0));
 //		items.add(new Skeleton<>(new Vertex(300,30),new Vertex(0,0)));
 		items.add(new Coin<>(new Vertex(16*8.5,30), new Vertex(0,0)));
-		items.add(new PushableBlock<>(0,new Vertex(16*22, 16*5), new Vertex(0,0)));
-		items.add(new PushableBlock<>(0,new Vertex(16*24, 16*5), new Vertex(0,0)));
+		pushables.add(new PushableBlock<>(0,new Vertex(16*24, 16*5), new Vertex(0,0)));
+		pushables.add(new PushableBlock<>(0,new Vertex(16*22, 16*5), new Vertex(0,0)));
 		for (int i = 0; i < 3*4; i++) {
 			cb.add(new LevelBlock<>(0, new Vertex(16*7,size.y*16-16-8*i-8), new Vertex(0,0),71));
 			cb.add(new LevelBlock<>(0, new Vertex(16*7,size.y*16-16-8*i-8), new Vertex(0,0),71));

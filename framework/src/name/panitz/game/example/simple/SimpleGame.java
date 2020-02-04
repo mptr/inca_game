@@ -14,6 +14,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	List<LevelBlock<I>> blocks = new ArrayList<>(); // collisioncheck
 	List<LevelBlock<I>> climbables = new ArrayList<>(); // ladders & ropes
 	List<GameObject<I>> items = new ArrayList<>(); // collisioncheck
+	List<PushableBlock<I>> pushables = new ArrayList<>();
 	List<GameObject<I>> toDel = new ArrayList<>(); // list modifiers
 	List<GameObject<I>> toAdd = new ArrayList<>();
 	Player<I> player;
@@ -33,6 +34,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		getGOss().add(background);
 		getGOss().add(climbables);
 		getGOss().add(items);
+		getGOss().add(pushables);
 		getGOss().add(blocks);
 		getGOss().add(fixedFg);
 	}
@@ -48,9 +50,11 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		System.out.println(currentVP);
 		items.clear();
 		blocks.clear();
+		pushables.clear();
 		player.setCollectedCoins(0);
+		climbables.clear();
 		background.clear();
-		new LevelBuilder<I>().makeLvl(player, items, blocks, climbables, background, gameSize);
+		new LevelBuilder<I>().makeLvl(player, items, blocks, climbables, background, pushables, gameSize);
 		pSound("pop.wav");
 	}
 	@Override
@@ -116,6 +120,15 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		toDel.clear();
 		items.addAll(toAdd);
 		toAdd.clear();
+		for (int i = 0; i < pushables.size(); i++) {
+			obstacleCollisionCheck(pushables.get(i));
+			// pushcheck entity
+			for (int j = i+1; j < pushables.size(); j++) {
+				if(pushables.get(i).touches(pushables.get(j))) {
+					pushables.get(j).getVelocity().x = pushables.get(i).getVelocity().x + 3*Math.signum(pushables.get(i).getVelocity().x);
+				}
+			}
+		}
 		if(player.getPos().y > gameSize.y*16*3+200 && player.getDeathTimer() == 0) {
 			player.getPos().moveTo(new Vertex(16*3+50,(gameSize.y*16-16*3)*3));
 			player.getVelocity().moveTo(new Vertex(0,0));
@@ -234,16 +247,16 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				entityHasYCollision = true;
 			}
 		}
-		for (GameObject<I> pb: items) {
-			if(pb != go && (pb instanceof PushableBlock)) {
-				if(go.standingOnTopOf(pb) || go.fallingOnTopOf(pb)) {
+		if(!(go instanceof PushableBlock)) {
+			for (PushableBlock<I> pb : pushables) {
+				if (go.standingOnTopOf(pb) || go.fallingOnTopOf(pb)) {
 					go.setCanClimbDown(0);
 					go.stop(pb.getPos().y);
 					entityHasYCollision = true;
-				} else if(go.hitsLeftSideOf(pb)) {
-					pb.setVelocity(new Vertex(go.getVelocity().x + 3,0));
-				} else if(go.hitsRightSideOf(pb)) {
-					pb.setVelocity(new Vertex(go.getVelocity().x - 3,0));
+				} else if (go.hitsLeftSideOf(pb)) {
+					pb.setVelocity(new Vertex(go.getVelocity().x + 3, 0));
+				} else if (go.hitsRightSideOf(pb)) {
+					pb.setVelocity(new Vertex(go.getVelocity().x - 3, 0));
 				}
 			}
 		}
