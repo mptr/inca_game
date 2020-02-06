@@ -4,6 +4,7 @@ import name.panitz.game.framework.*;
 import name.panitz.game.framework.swing.SwingGame;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -120,12 +121,18 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		toDel.clear();
 		items.addAll(toAdd);
 		toAdd.clear();
+		pushables.sort((pb1, pb2) -> {
+			double delta = pb1.getObjectCenter().dist(player.getObjectCenter()) - pb2.getObjectCenter().dist(player.getObjectCenter());
+			if (delta < 0) return 1;
+			else if (delta == 0) return 0;
+			return -1;
+		});
 		for (int i = 0; i < pushables.size(); i++) {
 			obstacleCollisionCheck(pushables.get(i));
 			// pushcheck entity
 			for (int j = i+1; j < pushables.size(); j++) {
 				if(pushables.get(i).touches(pushables.get(j))) {
-					pushables.get(j).getVelocity().x = pushables.get(i).getVelocity().x + 3*Math.signum(pushables.get(i).getVelocity().x);
+					pushables.get(i).getVelocity().x = pushables.get(j).getVelocity().x + 3*Math.signum(pushables.get(j).getVelocity().x);
 				}
 			}
 		}
