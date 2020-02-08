@@ -53,9 +53,6 @@ public class FallingImage<I> extends ImageObject<I> {
 		getVelocity().y = 0;
 		isJumping = 0;
 	}
-	public Vertex getObjectCenter() {
-		return new Vertex(position.x + width / 2, position.y + height / 2);
-	}
 	public void left() {
 		if (isJumping > 0) {
 			getVelocity().x = -1;

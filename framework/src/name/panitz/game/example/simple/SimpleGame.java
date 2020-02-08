@@ -7,6 +7,10 @@ import name.panitz.game.framework.swing.SwingGame;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
@@ -14,11 +18,11 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	List<GameObject<I>> fixedFg = new ArrayList<>(); // fixed front elements
 	List<LevelBlock<I>> blocks = new ArrayList<>(); // collisioncheck
 	List<LevelBlock<I>> climbables = new ArrayList<>(); // ladders & ropes
-	List<GameObject<I>> items = new ArrayList<>(); // collisioncheck
+	List<ImageObject<I>> items = new ArrayList<>(); // collisioncheck
 	List<PushableBlock<I>> pushables = new ArrayList<>();
-	List<GameObject<I>> toDel = new ArrayList<>(); // list modifiers
-	List<GameObject<I>> toAdd = new ArrayList<>();
-	Player<I> player;
+	List<ImageObject<I>> toDel = new ArrayList<>(); // list modifiers
+	List<ImageObject<I>> toAdd = new ArrayList<>();
+	Player<I, S> player;
 	TextObject<I> coinDisplay = new TextObject<>(new Vertex(10, 30), "Coins: 0", "DejaVu Sans Mono", 30, new Color(0x001B37));
 	public static boolean muteSound = true;
 	public static final Vertex gameSize = new Vertex(37,18); // game size (# of 16px blocks in x and y)
@@ -27,7 +31,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	public SimpleGame() {
 		// init with player
 		super(new Player<>(new Vertex(0, 0), new Vertex(0, 0),2.9), windowSize.x, windowSize.y);
-		player = (Player<I>) super.player;
+		player = (Player<I, S>) super.player;
 		player.setParent(this);
 		buttons.add(new Button("Reset Level", this::resetLvl));
 		buttons.add(new Button("toggle Sound", this::toggleMute));
@@ -37,9 +41,9 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		fixedFg.add(coinDisplay);
 		getGOss().add(background);
 		getGOss().add(climbables);
+		getGOss().add(blocks);
 		getGOss().add(items);
 		getGOss().add(pushables);
-		getGOss().add(blocks);
 		getGOss().add(fixedFg);
 	}
 	public void toggleMute() {
@@ -58,7 +62,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		player.setCollectedCoins(0);
 		climbables.clear();
 		background.clear();
-		new LevelBuilder<I>().makeLvl(player, items, blocks, climbables, background, pushables, gameSize);
+		new LevelBuilder<I, S>().makeLvl(player, items, blocks, climbables, background, pushables, gameSize);
 		pSound("pop.wav");
 	}
 	@Override
@@ -73,7 +77,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			}
 		}
 		obstacleCollisionCheck(player);
-		for (GameObject<I> item: items) {
+		boolean doorsOpen = true;
+		for (ImageObject<I> item: items) {
 			if(item.touches(player)){
 				if(item instanceof Coin) { // Coin touched?
 					toDel.add(item);
@@ -96,8 +101,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					toDel.add(item);
 					toAdd.add(new Skeleton<>(new Vertex(13*gameSize.x, gameSize.y*16-100), new Vertex(0,0)));
 				}
-			}
-			if(item instanceof Arrow) {
+			} else if(item instanceof Arrow) {
 				for (LevelBlock<I> b: blocks) {
 					if(b.touches(item)) {
 						if(item.getVelocity().dist() > 0) {
@@ -118,8 +122,27 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				if(((Arrow<I>)item).getRemoveCounter() > 200) {
 					toDel.add(item);
 				}
+			} else if(item instanceof Door) {
+				if(item.getCurrentAnimationFrame() == 3 && player.getObjectCenter().dist(item.getObjectCenter()) < 28) {
+					((Door<I>) item).setOpen(false);
+					player.setSpeed(0);
+					new Timer().schedule(new TimerTask() {
+						@Override
+						public void run() {
+							player.kill();
+						}
+					},20);
+				}
+			} else if(item instanceof Coin) {
+				doorsOpen = false;
 			}
 		}
+		boolean finalDoorsOpen = doorsOpen;
+		items.forEach(i -> {
+			if(i instanceof Door){
+				((Door<I>) i).setOpen(finalDoorsOpen);
+			}
+		});
 		items.removeAll(toDel);
 		toDel.clear();
 		items.addAll(toAdd);
@@ -311,7 +334,10 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					player.setClimbing(1);
 					break;
 				case VK_L:
-					player.setCollectedCoins(player.getCollectedCoins()+1);
+					((Door<I>)items.get(items.size()-1)).setOpen(false);
+					break;
+				case VK_O:
+					((Door<I>)items.get(items.size()-1)).setOpen(true);
 					break;
 				default:
 			}

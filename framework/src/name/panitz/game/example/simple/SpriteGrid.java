@@ -76,6 +76,13 @@ public class SpriteGrid {
 				}
 			}}
 	);
+	public static final List<Rect> doorGrid = Collections.unmodifiableList(
+			new ArrayList<>() {{
+				for (int i = 0; i < 4; i++) {
+					add(new Rect(i*26, 0, (i+1)*26, 26));
+				}
+			}}
+	);
 	public static final List<List<Rect>> skeletonGrid = Collections.unmodifiableList(
 			new ArrayList<>() {{
 				final int[] widths  = {24,22,22,43,30,33};
@@ -114,6 +121,8 @@ public class SpriteGrid {
 				return skeletonGrid.get(x);
 			case 3:
 				return arrowGrid;
+			case 4:
+				return doorGrid;
 			default:
 				return new ArrayList<>();
 		}
@@ -149,6 +158,7 @@ public class SpriteGrid {
 			}
 		}
 		if(x==3) return "arrow.png";
+		if(x==4) return "door.png";
 		return "coin.png";
 	}
 	public static Vertex getCutoutOffset(int x) {

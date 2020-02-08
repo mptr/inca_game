@@ -3,15 +3,15 @@ package name.panitz.game.example.simple;
 import name.panitz.game.framework.FallingImage;
 import name.panitz.game.framework.Vertex;
 
-public class Player<I> extends FallingImage<I> {
+public class Player<I, S> extends FallingImage<I> {
 	private int collectedCoins = 0;
 	private int deathTimer = 0;
-	private SimpleGame parent = null;
+	private SimpleGame<I, S> parent = null;
 	private int climbing = 0; // 0 = none, 1 = down, 2 = up
 	Player(Vertex pos, Vertex motion, double objZoom) {
 		super(1, pos, motion, objZoom);
 	}
-	public void setParent(SimpleGame p) {
+	public void setParent(SimpleGame<I, S> p) {
 		parent = p;
 	}
 	Player(Vertex pos, Vertex motion) {
@@ -40,14 +40,13 @@ public class Player<I> extends FallingImage<I> {
 		System.out.println("Coins: " + cc);
 	}
 	public void kill() {
-		getPos().moveTo(new Vertex(0,10000));
 		deathTimer++;
 	}
-
 	@Override
 	public void move() {
 		if(deathTimer > 0) {
 			deathTimer++;
+			getPos().moveTo(new Vertex(0,10000));
 		}
 		if(deathTimer >= 100) {
 			deathTimer = 0;

@@ -8,17 +8,17 @@ import static name.panitz.game.example.simple.SimpleGame.currentVP;
 import static name.panitz.game.example.simple.SpriteGrid.*;
 
 public class ImageObject<I> extends AbstractGameObject<I> {
-	int animationSpeed = 4; // higher is slower, -1 = off
+	protected int animationSpeed = 4; // higher is slower, -1 = off
 	String imageFileName;
 	int gameObjectId;
 	I img;
-	Rect cutout;
-	Vertex cutoutOffset = new Vertex(0,0); // offset from image to actual hitbox
+	protected Rect cutout;
+	protected Vertex cutoutOffset = new Vertex(0,0); // offset from image to actual hitbox
 	private double objectZoom;
 	private boolean changed = true;
-	List<Rect> animationFrames;
-	int currentAnimationFrame;
-	int animationFrameSkip = 0;
+	protected List<Rect> animationFrames;
+	protected int currentAnimationFrame;
+	protected int animationFrameSkip = 0;
 	boolean facing = false; // false = right, true = left
 	public ImageObject(int gameObjectId, Vertex pos, Vertex motion, double objectZoom, int startFrame) {
 		super(getListFromID(gameObjectId).get(startFrame).getWidth()*objectZoom, getListFromID(gameObjectId).get(startFrame).getHeight()*objectZoom, pos.mult(objectZoom), motion);
@@ -73,6 +73,9 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 			if(facing) tmpCo = tmpCo.flip(true, false);
 			g.drawImage(img, currentVP.getV1().x + getPos().x + cutoutOffset.x*objectZoom*(facing?1:0), currentVP.getV1().y + getPos().y + cutoutOffset.y*objectZoom, Math.abs(tmpCo.getV1().x - tmpCo.getV2().x)*objectZoom, Math.abs(tmpCo.getV1().y - tmpCo.getV2().y)*objectZoom, (int) tmpCo.getV1().x, (int) tmpCo.getV1().y, (int) tmpCo.getV2().x, (int) tmpCo.getV2().y);
 		}
+	}
+	public Vertex getObjectCenter() {
+		return new Vertex(position.x + width / 2, position.y + height / 2);
 	}
 	public void animate() {
 		animationFrameSkip++;
