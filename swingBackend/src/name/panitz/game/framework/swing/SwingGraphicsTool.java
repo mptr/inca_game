@@ -1,11 +1,11 @@
 package name.panitz.game.framework.swing;
 
 import java.awt.*;
+import java.util.Objects;
 import javax.swing.ImageIcon;
 
 import name.panitz.game.framework.GraphicsTool;
 import name.panitz.game.framework.GameObject;
-import name.panitz.game.framework.Vertex;
 
 public class SwingGraphicsTool implements GraphicsTool<Image> {
 	Graphics g;
@@ -57,7 +57,7 @@ public class SwingGraphicsTool implements GraphicsTool<Image> {
 
 	@Override
 	public Image generateImage(String name, GameObject<Image> go) {
-		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource(name));
+		ImageIcon image = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource(name)));
 		go.setWidth(image.getIconWidth());
 		go.setHeight(image.getIconHeight());
 		return image.getImage();

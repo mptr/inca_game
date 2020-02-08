@@ -38,7 +38,7 @@ public enum KeyCode {
 	VK_SPACE(' ');
 
 	private static final Map<Integer, KeyCode> LOOKUP
-			= new HashMap<Integer, KeyCode>();
+			= new HashMap<>();
 
 	static {
 		for (KeyCode s : EnumSet.allOf(KeyCode.class))
@@ -47,7 +47,7 @@ public enum KeyCode {
 
 	private int code;
 
-	private KeyCode(int code) {
+	KeyCode(int code) {
 		this.code = code;
 	}
 

@@ -12,12 +12,12 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 	String imageFileName;
 	int gameObjectId;
 	I img;
-	Rect cutout = null;
+	Rect cutout;
 	Vertex cutoutOffset = new Vertex(0,0); // offset from image to actual hitbox
-	private double objectZoom = 3;
+	private double objectZoom;
 	private boolean changed = true;
 	List<Rect> animationFrames;
-	int currentAnimationFrame = 0;
+	int currentAnimationFrame;
 	int animationFrameSkip = 0;
 	boolean facing = false; // false = right, true = left
 	public ImageObject(int gameObjectId, Vertex pos, Vertex motion, double objectZoom, int startFrame) {

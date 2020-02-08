@@ -6,9 +6,7 @@ import name.panitz.game.framework.swing.SwingGame;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
@@ -21,6 +19,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	List<GameObject<I>> toDel = new ArrayList<>(); // list modifiers
 	List<GameObject<I>> toAdd = new ArrayList<>();
 	Player<I> player;
+	TextObject<I> coinDisplay = new TextObject<>(new Vertex(10, 30), "Coins: 0", "DejaVu Sans Mono", 30, new Color(0x001B37));
 	public static boolean muteSound = true;
 	public static final Vertex gameSize = new Vertex(37,18); // game size (# of 16px blocks in x and y)
 	public static final Vertex windowSize = new Vertex(34*16*3,18*16*3); // game size (# of 16px blocks in x and y)
@@ -29,12 +28,13 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		// init with player
 		super(new Player<>(new Vertex(0, 0), new Vertex(0, 0),2.9), windowSize.x, windowSize.y);
 		player = (Player<I>) super.player;
+		player.setParent(this);
 		buttons.add(new Button("Reset Level", this::resetLvl));
 		buttons.add(new Button("toggle Sound", this::toggleMute));
 		resetLvl();
 		// setup
-		fixedFg.add(new TextObject<>(new Vertex(0,29), "█████", "DejaVu Sans Mono", 42, new Color(0xE3A569)));
-		fixedFg.add(new TextObject<>(new Vertex(10, 30), "Coins: 0", "DejaVu Sans Mono", 30, new Color(0x001B37)));
+		fixedFg.add(new TextObject<>(new Vertex(0,29), "███▋", "DejaVu Sans Mono", 42, new Color(0xE3E2E1)));
+		fixedFg.add(coinDisplay);
 		getGOss().add(background);
 		getGOss().add(climbables);
 		getGOss().add(items);
@@ -145,7 +145,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			player.startJump(0);
 			System.out.println("reset Player");
 			pSound("pop.wav");
-		} else if(player.getAnimationFrameSkip() == 0 && (player.getCurrentAnimationFrame() == 0 || player.getCurrentAnimationFrame() == 2)&& player.isJumping == 0 && player.getVelocity().y == 0 && Math.abs(player.getVelocity().x) > 0.5) {
+		} else //noinspection StatementWithEmptyBody
+			if(player.getAnimationFrameSkip() == 0 && (player.getCurrentAnimationFrame() == 0 || player.getCurrentAnimationFrame() == 2)&& player.isJumping == 0 && player.getVelocity().y == 0 && Math.abs(player.getVelocity().x) > 0.5) {
 //			pSound("walking.wav");
 		}
 		moveViewport();
@@ -165,7 +166,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	}
 	public void dropCoins() {
 		for (int i = 0; i < player.getCollectedCoins(); i++) {
-			toAdd.add(new Coin<I>(player.getPos().mult(1/3.0),new Vertex((Math.random()-.5)*10,(Math.random()-.3)*5)));
+			toAdd.add(new Coin<>(player.getPos().mult(1 / 3.0), new Vertex((Math.random() - .5) * 10, (Math.random() - .3) * 5)));
 		}
 		if(player.getCollectedCoins() > 0) {
 			pSound("coins.wav");
@@ -310,7 +311,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					player.setClimbing(1);
 					break;
 				case VK_L:
-
+					player.setCollectedCoins(player.getCollectedCoins()+1);
 					break;
 				default:
 			}
@@ -331,8 +332,6 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				case VK_D:
 					player.getVelocity().moveTo(player.getVelocity().mult(0));
 					break;
-				default:
-					;
 			}
 		}
 	}

@@ -12,7 +12,6 @@ import javax.swing.Timer;
 
 import name.panitz.game.framework.GameLogic;
 import name.panitz.game.framework.KeyCode;
-import name.panitz.game.framework.SoundObject;
 
 
 @SuppressWarnings("serial")

@@ -3,8 +3,7 @@ package name.panitz.game.framework.swing;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Objects;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -21,7 +20,7 @@ public class JavaSoundTool implements SoundTool<AudioInputStream> {
 	public AudioInputStream loadSound(String fileName) {
 		try {
 			InputStream src = getClass().getClassLoader().getResourceAsStream(fileName);
-			InputStream bufferedIn = new BufferedInputStream(src);
+			InputStream bufferedIn = new BufferedInputStream(Objects.requireNonNull(src));
 			// File laden
 			return AudioSystem.getAudioInputStream(bufferedIn);
 		} catch (UnsupportedAudioFileException | IOException e) {

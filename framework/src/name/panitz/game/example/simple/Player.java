@@ -6,9 +6,13 @@ import name.panitz.game.framework.Vertex;
 public class Player<I> extends FallingImage<I> {
 	private int collectedCoins = 0;
 	private int deathTimer = 0;
+	private SimpleGame parent = null;
 	private int climbing = 0; // 0 = none, 1 = down, 2 = up
 	Player(Vertex pos, Vertex motion, double objZoom) {
 		super(1, pos, motion, objZoom);
+	}
+	public void setParent(SimpleGame p) {
+		parent = p;
 	}
 	Player(Vertex pos, Vertex motion) {
 		super(1, pos, motion);
@@ -31,6 +35,7 @@ public class Player<I> extends FallingImage<I> {
 		return collectedCoins;
 	}
 	public void setCollectedCoins(int cc) {
+		parent.coinDisplay.setText("Coins: " + cc);
 		collectedCoins = cc;
 		System.out.println("Coins: " + cc);
 	}

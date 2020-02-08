@@ -21,7 +21,7 @@ public class GameApplication extends Application {
 		this.game = game;
 	}
 
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		canvas.setWidth(game.getWidth());
 		canvas.setHeight(game.getHeight());
 		BorderPane bp = new BorderPane();

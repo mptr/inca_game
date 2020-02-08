@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class FXContextTool implements GraphicsTool<Image> {
 	GraphicsContext gc;
@@ -60,15 +61,14 @@ public class FXContextTool implements GraphicsTool<Image> {
 
 	@Override
 	public Image generateImage(String name, GameObject<Image> go) {
-		Image image = new Image(getClass().getClassLoader().getResourceAsStream(name));
+		Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(name)));
 		go.setWidth(image.getWidth());
 		go.setHeight(image.getHeight());
 		return image;
 	}
 
 	public Image generateImage(String name, GameObject<Image> go, int x1, int y1, int x2, int y2) {
-		Image image = generateImage(name, go);
-		return image;
+		return generateImage(name, go);
 	}
 
 	@Override

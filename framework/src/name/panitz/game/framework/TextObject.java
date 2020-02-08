@@ -3,11 +3,13 @@ package name.panitz.game.framework;
 import java.awt.*;
 
 public class TextObject<I> extends AbstractGameObject<I> {
+	public void setText(String text) {
+		this.text = text;
+	}
 	private String text;
 	public String fontName;
 	public int fontSize;
 	public Color color;
-
 	public TextObject(Vertex position, String text, String fntName, int fntSize, Color color) {
 		super(0, 0, position);
 		this.text = text;

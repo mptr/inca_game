@@ -1,7 +1,6 @@
 package name.panitz.game.example.simple;
 
 import name.panitz.game.framework.GameObject;
-import name.panitz.game.framework.GraphicsTool;
 import name.panitz.game.framework.ImageObject;
 import name.panitz.game.framework.Vertex;
 

@@ -21,6 +21,7 @@ public abstract class AbstractGameObject<I> implements GameObject<I> {
 		this(width, height, new Vertex(0, 0));
 	}
 
+	@SuppressWarnings("SuspiciousNameCombination")
 	public AbstractGameObject(double width) {
 		this(width, width);
 	}

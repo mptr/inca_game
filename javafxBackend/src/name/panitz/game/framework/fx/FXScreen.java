@@ -17,7 +17,6 @@ public class FXScreen extends Canvas {
 
 	private JavaSoundTool soundTool = new JavaSoundTool();
 
-	@SuppressWarnings("deprecation")
 	public FXScreen(GameLogic<Image, AudioInputStream> gl) {
 		this.logic = gl;
 		this.setWidth(logic.getWidth());

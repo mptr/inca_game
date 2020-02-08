@@ -36,8 +36,7 @@ public interface GameObject<I> extends Movable, Paintable<I> {
 		if (this.isLeftOf(that)) return false;
 		if (that.isLeftOf(this)) return false;
 		if (this.isAbove(that)) return false;
-		if (that.isAbove(this)) return false;
-		return true;
+		return !that.isAbove(this);
 	}
 	default boolean fallingOnTopOf(GameObject<?> that) {
 		return !(isLeftOf(that) || isRightOf(that)) && getPos().y + getHeight() >= that.getPos().y + 3 && getPos().y + getHeight() < that.getPos().y + that.getHeight() && getVelocity().y >= 0.1;

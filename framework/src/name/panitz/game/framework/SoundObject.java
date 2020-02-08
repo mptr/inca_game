@@ -15,7 +15,7 @@ public class SoundObject<S> {
 			st.playSound(sound);
 			sound = null;
 		} catch (Exception e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 

@@ -21,7 +21,7 @@ public interface GameLogic<I, S> extends Movable, Paintable<I> {
 
 	boolean isStopped();
 
-	default public void paintTo(GraphicsTool<I> g) {
+	default void paintTo(GraphicsTool<I> g) {
 		for (List<? extends GameObject<I>> gos : getGOss())
 			for (GameObject<I> go : gos)
 				go.paintTo(g);
