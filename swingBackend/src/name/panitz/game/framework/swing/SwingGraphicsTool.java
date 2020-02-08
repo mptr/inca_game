@@ -49,9 +49,9 @@ public class SwingGraphicsTool implements GraphicsTool<Image> {
 	}
 
 	@Override
-	public void drawString(double x, double y, int fontSize, String fontName, String text) {
+	public void drawString(double x, double y, int fontSize, String fontName, String text, Color c) {
 		g.setFont(new Font(fontName, Font.PLAIN, fontSize));
-		g.setColor(new Color(0x001B37));
+		g.setColor(c);
 		g.drawString(text, (int) x, (int) y);
 	}
 

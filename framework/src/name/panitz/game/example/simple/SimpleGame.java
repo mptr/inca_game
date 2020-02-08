@@ -1,8 +1,10 @@
 package name.panitz.game.example.simple;
 
 import name.panitz.game.framework.*;
+import name.panitz.game.framework.Button;
 import name.panitz.game.framework.swing.SwingGame;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,7 +33,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		buttons.add(new Button("toggle Sound", this::toggleMute));
 		resetLvl();
 		// setup
-		fixedFg.add(new TextObject<>(new Vertex(10, 30), "Stats", "DejaVu Sans Mono", 30));
+		fixedFg.add(new TextObject<>(new Vertex(0,29), "█████", "DejaVu Sans Mono", 42, new Color(0xE3A569)));
+		fixedFg.add(new TextObject<>(new Vertex(10, 30), "Coins: 0", "DejaVu Sans Mono", 30, new Color(0x001B37)));
 		getGOss().add(background);
 		getGOss().add(climbables);
 		getGOss().add(items);

@@ -6,6 +6,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
+import java.awt.*;
+
 public class FXContextTool implements GraphicsTool<Image> {
 	GraphicsContext gc;
 
@@ -51,7 +53,7 @@ public class FXContextTool implements GraphicsTool<Image> {
 
 
 	@Override
-	public void drawString(double x, double y, int fontSize, String fontName, String text) {
+	public void drawString(double x, double y, int fontSize, String fontName, String text, Color c) {
 		gc.setFont(new Font(fontName, fontSize));
 		gc.fillText(text, x, y);
 	}

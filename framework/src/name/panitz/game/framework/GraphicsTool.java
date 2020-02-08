@@ -1,5 +1,7 @@
 package name.panitz.game.framework;
 
+import java.awt.*;
+
 public interface GraphicsTool<I> {
 	void drawImage(I img, double x, double y, double width, double height);
 
@@ -17,14 +19,14 @@ public interface GraphicsTool<I> {
 
 	void setColor(double red, double green, double blue);
 
-	void drawString(double x, double y, int fntsize, String fntName, String text);
+	void drawString(double x, double y, int fntsize, String fntName, String text, Color c);
 
-	default void drawString(double x, double y, int fontSize, String text) {
-		drawString(x, y, fontSize, "Helvetica", text);
+	default void drawString(double x, double y, int fontSize, String text, Color c) {
+		drawString(x, y, fontSize, "Helvetica", text, c);
 	}
 
 	default void drawString(double x, double y, String text) {
-		drawString(x, y, 20, "Helvetica", text);
+		drawString(x, y, 20, "Helvetica", text, new Color(0x000000));
 	}
 
 	default void drawCircle(double x, double y, double w) {
