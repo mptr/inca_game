@@ -43,6 +43,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		//fixedFg.add(coinDisplay);
 		getGOss().add(background);
 		getGOss().add(climbables);
+		getGOss().add(climbables);
 		getGOss().add(blocks);
 		getGOss().add(items);
 		getGOss().add(pushables);
@@ -126,14 +127,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				}
 			} else if(item instanceof Door) {
 				if(item.getCurrentAnimationFrame() == 3 && player.getObjectCenter().dist(item.getObjectCenter()) < 28) {
-					((Door<I>) item).setOpen(false);
 					player.setSpeed(0);
-					new Timer().schedule(new TimerTask() {
-						@Override
-						public void run() {
-							player.kill();
-						}
-					},20);
+					((Door<I>) item).enter();
 				}
 			} else if(item instanceof Coin) {
 				doorsOpen = false;

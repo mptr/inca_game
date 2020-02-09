@@ -14,7 +14,11 @@ public class LevelBuilder<I, S> {
 		border();
 		background();
 		if(levelID == 0) { // mainMenu
-
+			p.items.add(new Door<>(new Vertex(16*9,SimpleGame.gameSize.y*16-16-8-26),() -> p.resetLvl(1)));
+			p.items.add(new Door<>(new Vertex(16*11,SimpleGame.gameSize.y*16-16-8-26),() -> p.resetLvl(2)));
+			p.items.add(new Door<>(new Vertex(16*7,SimpleGame.gameSize.y*16-16-8-26),() -> p.resetLvl(3)));
+			p.items.add(new Door<>(new Vertex(16*13,SimpleGame.gameSize.y*16-16-8-26),() -> System.exit(0)));
+			p.player.getPos().moveTo(new Vertex(16*3+50,(SimpleGame.gameSize.y*16-16*2)*3-50));
 		} else if(levelID == 1) { // lv 1
 
 		} else { // rand

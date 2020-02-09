@@ -5,9 +5,15 @@ import name.panitz.game.framework.Vertex;
 
 public class Door<I> extends ImageObject<I> {
 	private boolean open = false;
-	public Door(Vertex pos) {
+	private Runnable action;
+	public Door(Vertex pos, Runnable action) {
 		super(4, pos.mult(3/4.0), new Vertex(0,0), 4);
 		animationSpeed = 3;
+		this.action = action;
+	}
+	public void enter() {
+		setOpen(false);
+		action.run();
 	}
 	public void setOpen(boolean o) {
 		open = o;
