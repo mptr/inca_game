@@ -59,6 +59,7 @@ public class SpriteGrid {
 						add(new Rect(16+32+i*8, 64+48+48+40+16*j,16+32+8*(i+1), 64+48+48+40+16*(j+1)));
 					}
 				}
+				add(new Rect(80,160,112,192));
 			}}
 	);
 	public static final List<Rect> coinGrid = Collections.unmodifiableList(

@@ -6,11 +6,11 @@ import name.panitz.game.framework.Vertex;
 
 
 public class LevelBlock<I> extends ImageObject<I> {
-	LevelBlock(int layer, Vertex pos, Vertex motion, int tileId, double objZoom) {
-		super(10+layer, pos, motion, objZoom, tileId);
+	LevelBlock(int layer, Vertex pos, int tileId, double objZoom) {
+		super(10+layer, pos, new Vertex(0,0), objZoom, tileId);
 	}
-	LevelBlock(int layer, Vertex pos, Vertex motion, int tileId) {
-		this(layer, pos, motion,tileId,3);
+	LevelBlock(int layer, Vertex pos, int tileId) {
+		this(layer, pos,tileId,3);
 	}
 	@Override
 	public void animate() {

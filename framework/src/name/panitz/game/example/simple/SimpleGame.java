@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
+	int levelbuilder = -1;
 	List<LevelBlock<I>> background = new ArrayList<>(); // no collisioncheck
 	List<GameObject<I>> fixedFg = new ArrayList<>(); // fixed front elements
 	List<LevelBlock<I>> blocks = new ArrayList<>(); // collisioncheck
@@ -33,12 +34,13 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		super(new Player<>(new Vertex(0, 0), new Vertex(0, 0),2.9), windowSize.x, windowSize.y);
 		player = (Player<I, S>) super.player;
 		player.setParent(this);
-		buttons.add(new Button("Reset Level", this::resetLvl));
+		buttons.add(new Button("Reset Level", () -> resetLvl(0)));
 		buttons.add(new Button("toggle Sound", this::toggleMute));
-		resetLvl();
+		buttons.add(new Button("Start LevelBuilder", () -> levelbuilder++));
+		resetLvl(0);
 		// setup
-		fixedFg.add(new TextObject<>(new Vertex(0,29), "███▋", "DejaVu Sans Mono", 42, new Color(0xE3E2E1)));
-		fixedFg.add(coinDisplay);
+		//fixedFg.add(new TextObject<>(new Vertex(0,29), "███▋", "DejaVu Sans Mono", 42, new Color(0xE3E2E1)));
+		//fixedFg.add(coinDisplay);
 		getGOss().add(background);
 		getGOss().add(climbables);
 		getGOss().add(blocks);
@@ -54,19 +56,19 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		if(muteSound) return;
 		playSound(new SoundObject<>(fname));
 	}
-	public void resetLvl() {
-		System.out.println(currentVP);
+	public void resetLvl(int levelID) {
 		items.clear();
 		blocks.clear();
 		pushables.clear();
 		player.setCollectedCoins(0);
 		climbables.clear();
 		background.clear();
-		new LevelBuilder<I, S>().makeLvl(player, items, blocks, climbables, background, pushables, gameSize);
+		new LevelBuilder<>(this).makeLvl(levelID);
 		pSound("pop.wav");
 	}
 	@Override
 	public void doChecks() {
+		if(levelbuilder > -1) return;
 		// spawn arrows
 		for(LevelBlock<I> b: blocks) {
 			if(Math.random() > .005) continue; // randomize
@@ -340,6 +342,77 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					((Door<I>)items.get(items.size()-1)).setOpen(true);
 					break;
 				default:
+			}
+			if(levelbuilder > -1) {
+				switch(keycode) {
+					case NUM_2: // mv down
+						blocks.get(levelbuilder).getPos().move(new Vertex(0,8*3));
+						break;
+					case NUM_4: // mv left
+						blocks.get(levelbuilder).getPos().move(new Vertex(-8*3,0));
+						break;
+					case NUM_6: // mv right
+						blocks.get(levelbuilder).getPos().move(new Vertex(8*3,0));
+						break;
+					case NUM_8: // mv up
+						blocks.get(levelbuilder).getPos().move(new Vertex(0,-8*3));
+						break;
+					case VK_Y: // generate new fg
+						blocks.add(new LevelBlock<>(0, new Vertex(10*16,10*16),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
+						levelbuilder = blocks.size()-1;
+						break;
+					case VK_X: // generate fg2
+						blocks.add(new LevelBlock<>(1, new Vertex(10*16,10*16),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
+						levelbuilder = blocks.size()-1;
+						break;
+					case VK_C: // generate new bg
+						background.add(new LevelBlock<>(2, new Vertex(10*16,10*16),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
+						levelbuilder = blocks.size()-1;
+						break;
+					case NUM_3: // prev Frame
+						blocks.get(levelbuilder).setCurrentAnimationFrame(blocks.get(levelbuilder).getCurrentAnimationFrame()-1);
+						break;
+					case NUM_9: // next frame
+						blocks.get(levelbuilder).setCurrentAnimationFrame(blocks.get(levelbuilder).getCurrentAnimationFrame()+1);
+						break;
+					case NUM_1: // prev Block
+						levelbuilder--;
+						break;
+					case NUM_7: // next Block
+						levelbuilder = Math.min(levelbuilder+1,blocks.size()-1);
+						break;
+					case NUM_0: // delete
+						blocks.remove(levelbuilder);
+						levelbuilder--;
+						break;
+					case NUM_5: // export
+						for (LevelBlock<I> lb:blocks) {
+							if(lb.getCurrentAnimationFrame() > 81 && lb.getCurrentAnimationFrame() < 96) continue;
+							System.out.println("p.blocks.add(new LevelBlock<>(0, new Vertex("
+									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
+						}
+						for (LevelBlock<I> lb:background) {
+							if(lb.getCurrentAnimationFrame() == 101) continue;
+							System.out.println("p.background.add(new LevelBlock<>(2, new Vertex("
+									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
+						}
+						System.out.println("p.player.getPos().moveTo(new Vertex(" + player.getPos().x + "," + player.getPos().y + "));");
+						levelbuilder = -1;
+						break;
+					case DOWN_ARROW:
+						player.getPos().move(new Vertex(0,8));
+						break;
+					case UP_ARROW:
+						player.getPos().move(new Vertex(0,-8));
+						break;
+					case LEFT_ARROW:
+						player.getPos().move(new Vertex(-8,0));
+						break;
+					case RIGHT_ARROW:
+						player.getPos().move(new Vertex(8,0));
+						break;
+				}
+				System.out.println(levelbuilder);
 			}
 		}
 	}

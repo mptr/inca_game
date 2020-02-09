@@ -5,8 +5,8 @@ import name.panitz.game.framework.Vertex;
 
 public class Door<I> extends ImageObject<I> {
 	private boolean open = false;
-	public Door(Vertex pos, Vertex motion) {
-		super(4, pos.mult(3/4.0), motion, 4);
+	public Door(Vertex pos) {
+		super(4, pos.mult(3/4.0), new Vertex(0,0), 4);
 		animationSpeed = 3;
 	}
 	public void setOpen(boolean o) {
