@@ -1,8 +1,10 @@
 package name.panitz.game.example.simple;
 
 import name.panitz.game.framework.ImageObject;
+import name.panitz.game.framework.TextObject;
 import name.panitz.game.framework.Vertex;
 
+import java.awt.*;
 import java.util.List;
 
 public class LevelBuilder<I, S> {
@@ -14,13 +16,120 @@ public class LevelBuilder<I, S> {
 		border();
 		background();
 		if(levelID == 0) { // mainMenu
-			p.items.add(new Door<>(new Vertex(16*9,SimpleGame.gameSize.y*16-16-8-26),() -> p.resetLvl(1)));
-			p.items.add(new Door<>(new Vertex(16*11,SimpleGame.gameSize.y*16-16-8-26),() -> p.resetLvl(2)));
-			p.items.add(new Door<>(new Vertex(16*7,SimpleGame.gameSize.y*16-16-8-26),() -> p.resetLvl(3)));
-			p.items.add(new Door<>(new Vertex(16*13,SimpleGame.gameSize.y*16-16-8-26),() -> System.exit(0)));
+			for (int i = 0; i < 3; i++) {
+				p.background.add(new LevelBlock<>(2, new Vertex(1.5*16, 12.5*16 + 16 * (4-i)), 58-i));
+				p.background.add(new LevelBlock<>(2, new Vertex(19*16, 12.5*16 + 16 * (4-i)), 58-i));
+			}
+			for (int j = 0; j < 4; j++) {
+				p.background.add(new LevelBlock<>(2, new Vertex(13*16, 12.5*16 + 16 * (4-j)), 58-j));
+				p.blocks.add(new LevelBlock<>(0, new Vertex(7*16, 12.5*16 + 16 * (4-j)), 58-j));
+			}
+			int[] randLadders = {72,72,72,73,73,78,78,74,79,75};
+			for (int i = 0; i < 11; i++) {
+				p.climbables.add(new LevelBlock<>(0, new Vertex(88,272 - i*8),randLadders[(int) (Math.random() * randLadders.length)]));
+			}
+			p.blocks.add(new LevelBlock<>(0, new Vertex(112, 264), 58));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(112, 248), 57));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(112, 232), 56));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(112, 216), 55));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(152, 200), 11));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(184, 200), 26));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(136, 200), 26));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(200, 200), 14));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(104, 200), 14));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(175, 216), 99));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(153, 216), 99));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(152, 224), 20));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(424, 264), 58));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(424, 248), 57));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(424, 232), 56));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(424, 216), 55));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(416, 200), 23));
+			p.background.add(new LevelBlock<>(2, new Vertex(424, 184), 58));
+			p.background.add(new LevelBlock<>(2, new Vertex(424, 168), 57));
+			p.background.add(new LevelBlock<>(2, new Vertex(424, 152), 57));
+			p.background.add(new LevelBlock<>(2, new Vertex(424, 136), 57));
+			p.background.add(new LevelBlock<>(2, new Vertex(424, 120), 56));
+			p.background.add(new LevelBlock<>(2, new Vertex(424, 104), 55));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(408, 88), 21));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(456, 88), 17));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(504, 88), 16));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(440, 88), 32));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(488, 88), 36));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(536, 88), 35));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(552, 88), 6));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(520, 248), 1));
+			p.background.add(new LevelBlock<>(2, new Vertex(568, 120), 27));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(480, 104), 99));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(480, 120), 97));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(480, 136), 97));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(480, 152), 97));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(480, 168), 98));
+			p.climbables.add(new LevelBlock<>(0, new Vertex(416.0,216.0), 99));
+			p.pushables.add(new PushableBlock<>(1, new Vertex(488.0,264.0), new Vertex(0, 0), 49));
+			p.items.add(new Door<>(new Vertex(9.4*16, 245.5),null));
+			p.otherObjs.add(new TextObject<>(new Vertex(475, 704),"Level 1","Times New Roman",20, new Color(0xE3A569), false));
 			p.player.getPos().moveTo(new Vertex(16*3+50,(SimpleGame.gameSize.y*16-16*2)*3-50));
 		} else if(levelID == 1) { // lv 1
+/*  LAST EXPORT
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,264.0), 58));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,248.0), 57));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,232.0), 56));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,216.0), 55));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,264.0), 58));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,248.0), 57));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,232.0), 56));
+p.blocks.add(new LevelBlock<>(0, new Vertex(112.0,216.0), 55));
+p.blocks.add(new LevelBlock<>(0, new Vertex(152.0,200.0), 11));
+p.blocks.add(new LevelBlock<>(0, new Vertex(184.0,200.0), 26));
+p.blocks.add(new LevelBlock<>(0, new Vertex(136.0,200.0), 26));
+p.blocks.add(new LevelBlock<>(0, new Vertex(200.0,200.0), 14));
+p.blocks.add(new LevelBlock<>(0, new Vertex(104.0,200.0), 14));
+p.blocks.add(new LevelBlock<>(0, new Vertex(152.0,224.0), 20));
+p.blocks.add(new LevelBlock<>(0, new Vertex(424.0,264.0), 58));
+p.blocks.add(new LevelBlock<>(0, new Vertex(424.0,248.0), 57));
+p.blocks.add(new LevelBlock<>(0, new Vertex(424.0,232.0), 56));
+p.blocks.add(new LevelBlock<>(0, new Vertex(424.0,216.0), 55));
+p.blocks.add(new LevelBlock<>(0, new Vertex(416.0,200.0), 23));
+p.blocks.add(new LevelBlock<>(0, new Vertex(408.0,88.0), 21));
+p.blocks.add(new LevelBlock<>(0, new Vertex(456.0,88.0), 17));
+p.blocks.add(new LevelBlock<>(0, new Vertex(504.0,88.0), 16));
+p.blocks.add(new LevelBlock<>(0, new Vertex(440.0,88.0), 32));
+p.blocks.add(new LevelBlock<>(0, new Vertex(488.0,88.0), 36));
+p.blocks.add(new LevelBlock<>(0, new Vertex(536.0,88.0), 35));
+p.blocks.add(new LevelBlock<>(0, new Vertex(552.0,88.0), 6));
+p.blocks.add(new LevelBlock<>(0, new Vertex(520.0,248.0), 1));
+p.climbables.add(new LevelBlock<>(0, new Vertex(464.0,104.0), 99));
+p.blocks.add(new LevelBlock<>(0, new Vertex(464.0,120.0), 97));
+p.blocks.add(new LevelBlock<>(0, new Vertex(464.0,136.0), 97));
+p.climbables.add(new LevelBlock<>(0, new Vertex(464.0,152.0), 98));
+p.climbables.add(new LevelBlock<>(0, new Vertex(448.0,104.0), 99));
+p.blocks.add(new LevelBlock<>(0, new Vertex(448.0,120.0), 97));
+p.climbables.add(new LevelBlock<>(0, new Vertex(448.0,136.0), 98));
+p.blocks.add(new LevelBlock<>(0, new Vertex(360.0,136.0), 23));
+p.blocks.add(new LevelBlock<>(0, new Vertex(328.0,136.0), 24));
+p.blocks.add(new LevelBlock<>(0, new Vertex(296.0,136.0), 23));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,8.0), 99));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,24.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,40.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,56.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,72.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,88.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,104.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(304.0,120.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,120.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,104.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,88.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,72.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,56.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,40.0), 97));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,8.0), 99));
+p.background.add(new LevelBlock<>(2, new Vertex(376.0,24.0), 97));
+-1
 
+Process finished with exit code 0
+
+* */
 		} else { // rand
 			
 		}
@@ -50,47 +159,4 @@ public class LevelBuilder<I, S> {
 			gameX++;
 		}
 	}
-	/*public void makeLvl(int levelID, Player<I, S> p, List<ImageObject<I>> items, List<LevelBlock<I>> fg, List<LevelBlock<I>> cb, List<LevelBlock<I>> bg, List<PushableBlock<I>> pushables, Vertex size) {
-		// background
-		for (int gameX = 0; gameX < size.x; gameX++) {
-			for (int gameY = 0; gameY < size.y; gameY++) {
-				bg.add(new LevelBlock<>(2, new Vertex(gameX*16,gameY*16), new Vertex(0,0), (int) (Math.random() * 9)));
-				gameY++;
-			}
-			gameX++;
-		}
-		// foreground borders bottom & top
-		for (int gameX = 0; gameX < size.x; gameX++) {
-			fg.add(new LevelBlock<>(0, new Vertex(gameX*16, 0),new Vertex(0,0), 11));
-			fg.add(new LevelBlock<>(0, new Vertex(gameX*16, size.y*16-16),new Vertex(0,0), 11));
-			gameX++;
-		}
-		// corners
-		fg.add(new LevelBlock<>(0, new Vertex(0,16),new Vertex(0,0),55));
-		fg.add(new LevelBlock<>(0, new Vertex(size.x*16-16,16),new Vertex(0,0),55));
-		fg.add(new LevelBlock<>(0, new Vertex(0,size.y*16-16*2),new Vertex(0,0),58));
-		fg.add(new LevelBlock<>(0, new Vertex(size.x*16-16,size.y*16-16*2),new Vertex(0,0),58));
-		// borders l&r
-		for (int gameY = 2; gameY < size.y-2; gameY++) {
-			fg.add(new LevelBlock<>(0, new Vertex(0,gameY*16),new Vertex(0,0),57));
-			fg.add(new LevelBlock<>(0, new Vertex(size.x*16-16,gameY*16),new Vertex(0,0),57));
-		}
-		// blocks
-		fg.add(new LevelBlock<>(0, new Vertex(16*8,size.y*16-16-32-32-32),new Vertex(0,0),0));
-//		fg.add(new LevelBlock<>(0, new Vertex(size.x*10-16-16,size.y*16-16*2),new Vertex(0,0),17));
-		//fg.add(new LevelBlock<>(0, new Vertex(size.x*10-16-16,size.y*16-16*2),new Vertex(0,0),37));
-		//fg.add(new LevelBlock<>(0, new Vertex(size.x*10-16-16+16,size.y*16-16*2),new Vertex(0,0),38));
-//		fg.add(new LevelBlock<>(0, new Vertex(16*8,size.y*16-16-32-32),new Vertex(0,0),0));
-//		fg.add(new LevelBlock<>(0, new Vertex(16*8,size.y*16-16-32),new Vertex(0,0),0));
-//		items.add(new Skeleton<>(new Vertex(300,30),new Vertex(0,0)));
-		items.add(new Coin<>(new Vertex(16*8.5,30), new Vertex(0,0)));
-		items.add(new Door<>(new Vertex(16*9,size.y*16-16-8-26),new Vertex(0,0)));
-		pushables.add(new PushableBlock<>(0,new Vertex(16*24, 16*5), new Vertex(0,0)));
-		pushables.add(new PushableBlock<>(0,new Vertex(16*22, 16*5), new Vertex(0,0)));
-		for (int i = 0; i < 3*4; i++) {
-			cb.add(new LevelBlock<>(0, new Vertex(16*7,size.y*16-16-8*i-8), new Vertex(0,0),71));
-		}
-		// player placing
-		p.getPos().moveTo(new Vertex(16*3+50,(size.y*16-16*2)*3-50));
-	}*/
 }

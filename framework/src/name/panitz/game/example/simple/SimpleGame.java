@@ -16,7 +16,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
 	int levelbuilder = -1;
 	List<LevelBlock<I>> background = new ArrayList<>(); // no collisioncheck
-	List<GameObject<I>> fixedFg = new ArrayList<>(); // fixed front elements
+	List<GameObject<I>> otherObjs = new ArrayList<>(); // front elements
 	List<LevelBlock<I>> blocks = new ArrayList<>(); // collisioncheck
 	List<LevelBlock<I>> climbables = new ArrayList<>(); // ladders & ropes
 	List<ImageObject<I>> items = new ArrayList<>(); // collisioncheck
@@ -36,18 +36,17 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		player.setParent(this);
 		buttons.add(new Button("Reset Level", () -> resetLvl(0)));
 		buttons.add(new Button("toggle Sound", this::toggleMute));
-		buttons.add(new Button("Start LevelBuilder", () -> levelbuilder++));
+		buttons.add(new Button("toggle LevelBuilder", () -> levelbuilder = (levelbuilder==-1)?blocks.size()-1:-1));
 		resetLvl(0);
 		// setup
-		//fixedFg.add(new TextObject<>(new Vertex(0,29), "███▋", "DejaVu Sans Mono", 42, new Color(0xE3E2E1)));
-		//fixedFg.add(coinDisplay);
+		otherObjs.add(new TextObject<>(new Vertex(0,29), "███▋", "DejaVu Sans Mono", 42, new Color(0xE3E2E1)));
+		otherObjs.add(coinDisplay);
 		getGOss().add(background);
-		getGOss().add(climbables);
 		getGOss().add(climbables);
 		getGOss().add(blocks);
 		getGOss().add(items);
 		getGOss().add(pushables);
-		getGOss().add(fixedFg);
+		getGOss().add(otherObjs);
 	}
 	public void toggleMute() {
 		muteSound = !muteSound;
@@ -126,7 +125,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					toDel.add(item);
 				}
 			} else if(item instanceof Door) {
-				if(item.getCurrentAnimationFrame() == 3 && player.getObjectCenter().dist(item.getObjectCenter()) < 28) {
+				if(item.getCurrentAnimationFrame() == 3 && player.getObjectCenter().dist(item.getObjectCenter()) < 30) {
 					player.setSpeed(0);
 					((Door<I>) item).enter();
 				}
@@ -137,7 +136,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		boolean finalDoorsOpen = doorsOpen;
 		items.forEach(i -> {
 			if(i instanceof Door){
-				((Door<I>) i).setOpen(finalDoorsOpen);
+				//((Door<I>) i).setOpen(finalDoorsOpen);
 			}
 		});
 		items.removeAll(toDel);
@@ -248,9 +247,10 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		go.setCanClimbDown(-1);
 		for (LevelBlock<I> c: climbables) {
 			if(go.touches(c) || go.standingOnTopOf(c)) {
-				if(c.getCurrentAnimationFrame() < 98) {// rope
+				go.setCanClimbUp(1);
+				/*if(c.getCurrentAnimationFrame() < 97) {// rope
 					go.setCanClimbUp(1);
-				}
+				}*/ // climb any
 				go.setCanClimbDown(1);
 				entityHasYCollision = true;
 			}
@@ -353,15 +353,15 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						blocks.get(levelbuilder).getPos().move(new Vertex(0,-8*3));
 						break;
 					case VK_Y: // generate new fg
-						blocks.add(new LevelBlock<>(0, new Vertex(10*16,10*16),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
+						blocks.add(new LevelBlock<>(0, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
 						levelbuilder = blocks.size()-1;
 						break;
 					case VK_X: // generate fg2
-						blocks.add(new LevelBlock<>(1, new Vertex(10*16,10*16),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
+						blocks.add(new LevelBlock<>(1, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
 						levelbuilder = blocks.size()-1;
 						break;
 					case VK_C: // generate new bg
-						background.add(new LevelBlock<>(2, new Vertex(10*16,10*16),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
+						blocks.add(new LevelBlock<>(2, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
 						levelbuilder = blocks.size()-1;
 						break;
 					case NUM_3: // prev Frame
@@ -381,17 +381,32 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						levelbuilder--;
 						break;
 					case NUM_5: // export
+						int counter = 0;
+						// List<LevelBlock<I>> allBlocks
+						// TODO summarize
 						for (LevelBlock<I> lb:blocks) {
-							if(lb.getCurrentAnimationFrame() > 81 && lb.getCurrentAnimationFrame() < 96) continue;
-							System.out.println("p.blocks.add(new LevelBlock<>(0, new Vertex("
-									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
+							counter++;
+							if(counter <= 216) continue; //border skip
+							if((lb.gameObjectId-10) == 2){
+								System.out.println("p.background.add(new LevelBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
+										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), " + lb.getCurrentAnimationFrame() + "));");
+							}else if(lb.getCurrentAnimationFrame() >= 71 && lb.getCurrentAnimationFrame() <= 80 || lb.getCurrentAnimationFrame() >= 98){
+								System.out.println("p.climbables.add(new LevelBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
+										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), " + lb.getCurrentAnimationFrame() + "));");
+							}else if(lb.getCurrentAnimationFrame() >= 45 && lb.getCurrentAnimationFrame() <= 54){
+								System.out.println("p.pushables.add(new PushableBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
+										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), new Vertex(0, 0), " + lb.getCurrentAnimationFrame() + "));");
+							}else {
+								System.out.println("p.blocks.add(new LevelBlock<>(" + (lb.gameObjectId - 10) + ", new Vertex("
+										+ lb.getPos().x / 3 + "," + lb.getPos().y / 3 + "), " + lb.getCurrentAnimationFrame() + "));");
+							}
 						}
-						for (LevelBlock<I> lb:background) {
+						/*for (LevelBlock<I> lb:background) {
 							if(lb.getCurrentAnimationFrame() == 101) continue;
 							System.out.println("p.background.add(new LevelBlock<>(2, new Vertex("
 									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
-						}
-						System.out.println("p.player.getPos().moveTo(new Vertex(" + player.getPos().x + "," + player.getPos().y + "));");
+						}*/
+						//System.out.println("p.player.getPos().moveTo(new Vertex(" + player.getPos().x + "," + player.getPos().y + "));");
 						levelbuilder = -1;
 						break;
 					case DOWN_ARROW:

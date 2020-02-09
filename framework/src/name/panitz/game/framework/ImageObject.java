@@ -10,7 +10,7 @@ import static name.panitz.game.example.simple.SpriteGrid.*;
 public class ImageObject<I> extends AbstractGameObject<I> {
 	protected int animationSpeed = 4; // higher is slower, -1 = off
 	String imageFileName;
-	int gameObjectId;
+	public int gameObjectId;
 	I img;
 	protected Rect cutout;
 	protected Vertex cutoutOffset = new Vertex(0,0); // offset from image to actual hitbox

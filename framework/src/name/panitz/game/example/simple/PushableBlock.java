@@ -4,11 +4,12 @@ import name.panitz.game.framework.FallingImage;
 import name.panitz.game.framework.Vertex;
 
 public class PushableBlock<I> extends FallingImage<I> {
-	PushableBlock(int layer, Vertex pos, Vertex motion, double objZoom) {
-		super(10+layer, pos, motion, objZoom, 46);
+	PushableBlock(int layer, Vertex pos, Vertex motion, double objZoom, int startFrame) {
+		super(10+layer, pos, motion, objZoom, startFrame);
+
 	}
-	PushableBlock(int layer, Vertex pos, Vertex motion) {
-		this(layer, pos, motion,3);
+	PushableBlock(int layer, Vertex pos, Vertex motion, int startFrame) {
+		this(layer, pos, motion,3, startFrame);
 	}
 	@Override
 	public void animate() {
