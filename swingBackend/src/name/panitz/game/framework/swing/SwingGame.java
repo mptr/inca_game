@@ -35,8 +35,8 @@ public class SwingGame extends JPanel {
 		JFrame f = new JFrame();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.add(new SwingGame(game));
-		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		f.setResizable(false);
+		//f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//f.setResizable(false);
 		f.pack();
 		f.setVisible(true);
 	}
