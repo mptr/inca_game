@@ -65,13 +65,14 @@ public class FallingImage<I> extends ImageObject<I> {
 	}
 	public void jump() {
 		if(isJumping == 0) {
-			startJump(-6);
+			startJump(-5.5);
 		} else if(isJumping == 1) {
-			if(touchesWall != 0 && getVelocity().y + Math.abs(getVelocity().x * speed * .5) > 1) {
-				startJump(-6);
-			} else {
-				startJump(-4 + getVelocity().y + Math.abs(getVelocity().x * speed * .5));
-			}
+			startJump(-6.5);
+//			if(touchesWall != 0 && getVelocity().y + Math.abs(getVelocity().x * speed * .5) > 1) {
+//				startJump(-6);
+//			} else {
+//				startJump(-4 + getVelocity().y + Math.abs(getVelocity().x * speed * .5));
+//			}
 		}
 	}
 
@@ -86,6 +87,6 @@ public class FallingImage<I> extends ImageObject<I> {
 			t++;
 			getVelocity().y = v0 + G * t / 50;
 		}
-		getPos().move(getVelocity().mult(new Vertex(isJumping>0 ? (Math.max(speed - t * 0.01, 1.3)) : speed, 1)));
+		getPos().move(getVelocity().mult(new Vertex(isJumping>0 ? (Math.max(speed - t * 0.01, 0)) : speed, 1)));
 	}
 }

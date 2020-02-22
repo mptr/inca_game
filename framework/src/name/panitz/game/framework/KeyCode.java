@@ -19,6 +19,7 @@ public enum KeyCode {
 	NUM_7(103),
 	NUM_8(104),
 	NUM_9(105),
+	VK_SHIFT(16),
 	VK_A('A'),
 	VK_B('B'),
 	VK_C('C'),

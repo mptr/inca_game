@@ -324,6 +324,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					player.kill();
 					break;
 				case VK_W:
+				case VK_SHIFT:
 					player.setClimbing(2);
 					player.setSpeed(2.5);
 					break;
@@ -390,7 +391,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 							if((lb.gameObjectId-10) == 2){
 								System.out.println("p.background.add(new LevelBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
 										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), " + lb.getCurrentAnimationFrame() + "));");
-							}else if(lb.getCurrentAnimationFrame() >= 71 && lb.getCurrentAnimationFrame() <= 80 || lb.getCurrentAnimationFrame() >= 98){
+							}else if(lb.getCurrentAnimationFrame() >= 71 && lb.getCurrentAnimationFrame() <= 80 || lb.getCurrentAnimationFrame() >= 97){
 								System.out.println("p.climbables.add(new LevelBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
 										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), " + lb.getCurrentAnimationFrame() + "));");
 							}else if(lb.getCurrentAnimationFrame() >= 45 && lb.getCurrentAnimationFrame() <= 54){
@@ -401,12 +402,6 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 										+ lb.getPos().x / 3 + "," + lb.getPos().y / 3 + "), " + lb.getCurrentAnimationFrame() + "));");
 							}
 						}
-						/*for (LevelBlock<I> lb:background) {
-							if(lb.getCurrentAnimationFrame() == 101) continue;
-							System.out.println("p.background.add(new LevelBlock<>(2, new Vertex("
-									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
-						}*/
-						//System.out.println("p.player.getPos().moveTo(new Vertex(" + player.getPos().x + "," + player.getPos().y + "));");
 						levelbuilder = -1;
 						break;
 					case DOWN_ARROW:
@@ -431,7 +426,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		if (keycode != null) {
 			switch (keycode) {
 				case VK_W:
-					player.setSpeed(1.25);
+				case VK_SHIFT:
+					player.setSpeed(1.75);
 				case VK_S:
 					player.setClimbing(0);
 					if(player.getCanClimbUp() || player.getCanClimbDown())
