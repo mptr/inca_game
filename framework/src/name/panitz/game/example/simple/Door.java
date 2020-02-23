@@ -7,7 +7,7 @@ public class Door<I> extends ImageObject<I> {
 	private boolean open = false;
 	private Runnable action;
 	public Door(Vertex pos, Runnable action) {
-		super(4, pos.mult(3/4.0), new Vertex(0,0), 4);
+		super(4, pos, new Vertex(0,0));
 		animationSpeed = 3;
 		this.action = action;
 	}

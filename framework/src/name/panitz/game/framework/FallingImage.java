@@ -36,7 +36,6 @@ public class FallingImage<I> extends ImageObject<I> {
 	public void stop() {
 		getPos().move(getVelocity().mult(-1.1));
 		getVelocity().y = 0;
-		isJumping = 0;
 	}
 	public void setTouchesWall(int x){
 		touchesWall=x;
@@ -65,9 +64,10 @@ public class FallingImage<I> extends ImageObject<I> {
 	}
 	public void jump() {
 		if(isJumping == 0) {
-			startJump(-5.5);
+			startJump(-6);
 		} else if(isJumping == 1) {
-			startJump(-6.5);
+			stop();
+			startJump(-6);
 //			if(touchesWall != 0 && getVelocity().y + Math.abs(getVelocity().x * speed * .5) > 1) {
 //				startJump(-6);
 //			} else {

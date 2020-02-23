@@ -54,10 +54,12 @@ public class SpriteGrid {
 					}
 				}
 				// ropes
-				add(new Rect(16+32+1, 64+48+48+40,16+32+1+6, 64+48+48+40+16));
-				add(new Rect(16+32+1, 64+48+48+40+16,16+32+1+6, 64+48+48+40+16*2));
-				add(new Rect(16+32+9, 64+48+48+40,16+32+9+6, 64+48+48+40+16*2));
-				add(new Rect(16+32+9, 64+48+48+40+16,16+32+9+6, 64+48+48+40+16));
+				// first rope pixel:  48 | 200
+
+				add(new Rect(48+1, 200,48+1+6, 200+16));
+				add(new Rect(48+1, 200+16,48+1+6, 200+16+8));
+				add(new Rect(48+8+1, 200,48+8+1+6, 200+16));
+				add(new Rect(48+8+1, 200+16,48+8+1+6, 200+16+8));
 				// void
 				add(new Rect(80,160,112,192));
 			}}
@@ -80,7 +82,7 @@ public class SpriteGrid {
 	public static final List<Rect> doorGrid = Collections.unmodifiableList(
 			new ArrayList<>() {{
 				for (int i = 0; i < 4; i++) {
-					add(new Rect(i*26, 0, (i+1)*26, 26));
+					add(new Rect(i*34, 0, (i+1)*34, 34));
 				}
 			}}
 	);

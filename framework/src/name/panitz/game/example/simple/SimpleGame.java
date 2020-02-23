@@ -246,6 +246,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		go.setCanClimbUp(-1); // reset
 		go.setCanClimbDown(-1);
 		for (LevelBlock<I> c: climbables) {
+			if(c.getCurrentAnimationFrame() == 98 || c.getCurrentAnimationFrame() == 100) continue; // no climb on rope end
 			if(go.touches(c) || go.standingOnTopOf(c)) {
 				go.setCanClimbUp(1);
 				/*if(c.getCurrentAnimationFrame() < 97) {// rope
@@ -324,8 +325,9 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					player.kill();
 					break;
 				case VK_W:
-				case VK_SHIFT:
 					player.setClimbing(2);
+					break;
+				case VK_SHIFT:
 					player.setSpeed(2.5);
 					break;
 				case VK_S:
@@ -379,6 +381,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						break;
 					case NUM_0: // delete
 						blocks.remove(levelbuilder);
+
 						levelbuilder--;
 						break;
 					case NUM_5: // export
@@ -402,6 +405,12 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 										+ lb.getPos().x / 3 + "," + lb.getPos().y / 3 + "), " + lb.getCurrentAnimationFrame() + "));");
 							}
 						}
+						/*for (LevelBlock<I> lb:background) {
+							if(lb.getCurrentAnimationFrame() == 101) continue;
+							System.out.println("p.background.add(new LevelBlock<>(2, new Vertex("
+									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
+						}*/
+						//System.out.println("p.player.getPos().moveTo(new Vertex(" + player.getPos().x + "," + player.getPos().y + "));");
 						levelbuilder = -1;
 						break;
 					case DOWN_ARROW:
@@ -425,10 +434,10 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	public void keyReleasedReaction(KeyCode keycode) {
 		if (keycode != null) {
 			switch (keycode) {
-				case VK_W:
 				case VK_SHIFT:
-					player.setSpeed(1.75);
+					player.setSpeed(1.25);
 				case VK_S:
+				case VK_W:
 					player.setClimbing(0);
 					if(player.getCanClimbUp() || player.getCanClimbDown())
 						player.startJump(0);

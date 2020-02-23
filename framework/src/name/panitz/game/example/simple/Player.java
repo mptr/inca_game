@@ -58,10 +58,10 @@ public class Player<I, S> extends FallingImage<I> {
 			} else {
 				startJump(-1.5);
 			}
-		} /*else if(climbing == 1 && getCanClimbDown()) {
+		} else if(climbing == 1 && getCanClimbDown()) {
 			isJumping = 0;
 			setVelocity(getVelocity().mult(new Vertex(1,(getVelocity().y > .1 ? .9:0))));
-		}*/
+		}
 		super.move();
 	}
 
