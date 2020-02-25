@@ -13,6 +13,7 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 	public int gameObjectId;
 	I img;
 	protected Rect cutout;
+	private boolean fixed = false;
 	protected Vertex cutoutOffset = new Vertex(0,0); // offset from image to actual hitbox
 	private double objectZoom;
 	private boolean changed = true;
@@ -71,7 +72,10 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 		if (null != img) {
 			Rect tmpCo = cutout.flip(false,false);
 			if(facing) tmpCo = tmpCo.flip(true, false);
-			g.drawImage(img, currentVP.getV1().x + getPos().x + cutoutOffset.x*objectZoom*(facing?1:0), currentVP.getV1().y + getPos().y + cutoutOffset.y*objectZoom, Math.abs(tmpCo.getV1().x - tmpCo.getV2().x)*objectZoom, Math.abs(tmpCo.getV1().y - tmpCo.getV2().y)*objectZoom, (int) tmpCo.getV1().x, (int) tmpCo.getV1().y, (int) tmpCo.getV2().x, (int) tmpCo.getV2().y);
+			if(fixed)
+				g.drawImage(img, getPos().x + cutoutOffset.x*objectZoom*(facing?1:0), getPos().y + cutoutOffset.y*objectZoom, Math.abs(tmpCo.getV1().x - tmpCo.getV2().x)*objectZoom, Math.abs(tmpCo.getV1().y - tmpCo.getV2().y)*objectZoom, (int) tmpCo.getV1().x, (int) tmpCo.getV1().y, (int) tmpCo.getV2().x, (int) tmpCo.getV2().y);
+			else
+				g.drawImage(img, currentVP.getV1().x + getPos().x + cutoutOffset.x*objectZoom*(facing?1:0), currentVP.getV1().y + getPos().y + cutoutOffset.y*objectZoom, Math.abs(tmpCo.getV1().x - tmpCo.getV2().x)*objectZoom, Math.abs(tmpCo.getV1().y - tmpCo.getV2().y)*objectZoom, (int) tmpCo.getV1().x, (int) tmpCo.getV1().y, (int) tmpCo.getV2().x, (int) tmpCo.getV2().y);
 		}
 	}
 	public Vertex getObjectCenter() {
@@ -87,6 +91,10 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 			cutout = animationFrames.get(currentAnimationFrame);
 			animationFrameSkip = 0;
 		}
+	}
+
+	public void setFixed(boolean fixed) {
+		this.fixed = fixed;
 	}
 }
 

@@ -35,9 +35,14 @@ public class Player<I, S> extends FallingImage<I> {
 		return collectedCoins;
 	}
 	public void setCollectedCoins(int cc) {
-		parent.coinDisplay.setText("Coins: " + cc);
+		parent.coinDisplay.setText("Coins " + toRoman(cc));
 		collectedCoins = cc;
-		System.out.println("Coins: " + cc);
+		System.out.println("Coins " + cc);
+	}
+	public static String toRoman(int v){
+		if(v<0||v>15) return String.valueOf(v);
+		String[] tmp = {"-","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"};
+		return tmp[v];
 	}
 	public void kill() {
 		deathTimer++;

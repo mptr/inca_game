@@ -24,7 +24,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	List<ImageObject<I>> toDel = new ArrayList<>(); // list modifiers
 	List<ImageObject<I>> toAdd = new ArrayList<>();
 	Player<I, S> player;
-	TextObject<I> coinDisplay = new TextObject<>(new Vertex(10, 30), "Coins: 0", "DejaVu Sans Mono", 30, new Color(0x001B37));
+	TextObject<I> coinDisplay = new TextObject<>(new Vertex(10, 32), "", "Times New Roman Bold", 30, new Color(0xE3A569));
+	LevelBlock<I> coinDisplayBg = new LevelBlock<>(0, new Vertex(-7, -14), 102, 3, true);
 	public static boolean muteSound = true;
 	public static final Vertex gameSize = new Vertex(37,18); // game size (# of 16px blocks in x and y)
 	public static final Vertex windowSize = new Vertex(34*16*3,18*16*3); // game size (# of 16px blocks in x and y)
@@ -39,8 +40,6 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		buttons.add(new Button("toggle LevelBuilder", () -> levelbuilder = (levelbuilder==-1)?blocks.size()-1:-1));
 		resetLvl(0);
 		// setup
-		otherObjs.add(new TextObject<>(new Vertex(0,29), "███▋", "DejaVu Sans Mono", 42, new Color(0xE3E2E1)));
-		otherObjs.add(coinDisplay);
 		getGOss().add(background);
 		getGOss().add(climbables);
 		getGOss().add(blocks);
@@ -63,30 +62,36 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		player.setCollectedCoins(0);
 		climbables.clear();
 		background.clear();
+		otherObjs.clear();
+		if(levelID != 0) {
+			otherObjs.add(coinDisplayBg);
+			otherObjs.add(coinDisplay);
+		}
 		new LevelBuilder<>(this).makeLvl(levelID);
 		pSound("pop.wav");
 	}
 	@Override
 	public void doChecks() {
-		if(levelbuilder > -1) return;
+		Door<I> toEnter = null;
+		if (levelbuilder > -1) return;
 		// spawn arrows
-		for(LevelBlock<I> b: blocks) {
-			if(Math.random() > .005) continue; // randomize
-			if(b.getCurrentAnimationFrame() == 37) { // <-- o
-				items.add(new Arrow<>(new Vertex(b.getPos().x/3 -12, b.getPos().y/3 + b.getHeight()/2/3-1 /*obj Zoom*/), new Vertex(-6,0),false));
-			} else if(b.getCurrentAnimationFrame() == 38) { // o -->
-				items.add(new Arrow<>(new Vertex(b.getPos().x/3 + b.getWidth()/3, b.getPos().y/3 + b.getHeight()/2/3-1 /*obj Zoom*/), new Vertex(6,0),true));
+		for (LevelBlock<I> b : blocks) {
+			if (Math.random() > .005) continue; // randomize
+			if (b.getCurrentAnimationFrame() == 37) { // <-- o
+				items.add(new Arrow<>(new Vertex(b.getPos().x / 3 - 12, b.getPos().y / 3 + b.getHeight() / 2 / 3 - 1 /*obj Zoom*/), new Vertex(-6, 0), false));
+			} else if (b.getCurrentAnimationFrame() == 38) { // o -->
+				items.add(new Arrow<>(new Vertex(b.getPos().x / 3 + b.getWidth() / 3, b.getPos().y / 3 + b.getHeight() / 2 / 3 - 1 /*obj Zoom*/), new Vertex(6, 0), true));
 			}
 		}
 		obstacleCollisionCheck(player);
 		boolean doorsOpen = true;
-		for (ImageObject<I> item: items) {
-			if(item.touches(player)){
-				if(item instanceof Coin) { // Coin touched?
+		for (ImageObject<I> item : items) {
+			if (item.touches(player)) {
+				if (item instanceof Coin) { // Coin touched?
 					toDel.add(item);
 					player.setCollectedCoins(player.getCollectedCoins() + 1);
 					pSound("coin.wav");
-				} else if(item instanceof Arrow) {
+				} else if (item instanceof Arrow) {
 					if (item.getVelocity().dist() > 0 && ((Arrow<I>) item).getStuckIn() == null) {
 						dropCoins();
 						player.kill();
@@ -95,54 +100,58 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					}
 				}
 			}
-			if(item instanceof FallingImage) {
+			if (item instanceof FallingImage) {
 				obstacleCollisionCheck((FallingImage<I>) item);
 			}
-			if(item instanceof Skeleton) {
-				if(!skeletonKi((Skeleton<I>)item)) {
+			if (item instanceof Skeleton) {
+				if (!skeletonKi((Skeleton<I>) item)) {
 					toDel.add(item);
-					toAdd.add(new Skeleton<>(new Vertex(13*gameSize.x, gameSize.y*16-100), new Vertex(0,0)));
+					toAdd.add(new Skeleton<>(new Vertex(13 * gameSize.x, gameSize.y * 16 - 100), new Vertex(0, 0)));
 				}
-			} else if(item instanceof Arrow) {
-				for (LevelBlock<I> b: blocks) {
-					if(b.touches(item)) {
-						if(item.getVelocity().dist() > 0) {
+			} else if (item instanceof Arrow) {
+				for (LevelBlock<I> b : blocks) {
+					if (b.touches(item)) {
+						if (item.getVelocity().dist() > 0) {
 							pSound("arrow.wav");
 							((Arrow<I>) item).setStuckIn(b);
 						}
 					}
 				}
-				for (GameObject<I> i: items) {
-					if(item.touches(i) && (i instanceof PushableBlock) && item.getVelocity().dist() > 0) {
+				for (GameObject<I> i : items) {
+					if (item.touches(i) && (i instanceof PushableBlock) && item.getVelocity().dist() > 0) {
 						pSound("arrow.wav");
 						((Arrow<I>) item).setStuckIn(i);
 					}
 					if (i.touches(item) && ((Arrow<I>) item).getStuckIn() == null && (i instanceof Skeleton)) {
-						((Skeleton<I>)i).setMood(5);
+						((Skeleton<I>) i).setMood(5);
 					}
 				}
-				if(((Arrow<I>)item).getRemoveCounter() > 200) {
+				if (((Arrow<I>) item).getRemoveCounter() > 200) {
 					toDel.add(item);
 				}
-			} else if(item instanceof Door) {
-				if(item.getCurrentAnimationFrame() == 3 && player.getObjectCenter().dist(item.getObjectCenter()) < 30) {
+			} else if (item instanceof Door) {
+				if (item.getCurrentAnimationFrame() == 3 && player.getObjectCenter().dist(item.getObjectCenter()) < 30) {
 					player.setSpeed(0);
-					((Door<I>) item).enter();
+					toEnter = ((Door<I>) item);
 				}
-			} else if(item instanceof Coin) {
+			} else if (item instanceof Coin) {
 				doorsOpen = false;
 			}
 		}
 		boolean finalDoorsOpen = doorsOpen;
 		items.forEach(i -> {
-			if(i instanceof Door){
-				//((Door<I>) i).setOpen(finalDoorsOpen);
+			if (i instanceof Door) {
+				((Door<I>) i).setOpen(finalDoorsOpen);
 			}
 		});
 		items.removeAll(toDel);
 		toDel.clear();
 		items.addAll(toAdd);
 		toAdd.clear();
+		if (toEnter != null) {
+			toEnter.enter();
+			return;
+		}
 		pushables.sort((pb1, pb2) -> {
 			double delta = pb1.getObjectCenter().dist(player.getObjectCenter()) - pb2.getObjectCenter().dist(player.getObjectCenter());
 			if (delta < 0) return 1;
@@ -298,12 +307,6 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	}
 	@Override
 	public boolean isStopped() {
-//		for (GameObject<I> i: items) {
-//			if(i instanceof Coin) {
-//				return false;
-//			}
-//		}
-//		System.out.println("game finished");
 		return false;
 	}
 	@Override
@@ -333,12 +336,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				case VK_S:
 					player.setClimbing(1);
 					break;
-				case VK_L:
-					((Door<I>)items.get(items.size()-1)).setOpen(false);
-					break;
-				case VK_O:
-					((Door<I>)items.get(items.size()-1)).setOpen(true);
-					break;
+				case VK_C:
+					player.setCollectedCoins(player.getCollectedCoins()+1);
 				default:
 			}
 			if(levelbuilder > -1) {
@@ -386,7 +385,6 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						break;
 					case NUM_5: // export
 						int counter = 0;
-						// List<LevelBlock<I>> allBlocks
 						// TODO summarize
 						for (LevelBlock<I> lb:blocks) {
 							counter++;
@@ -405,12 +403,6 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 										+ lb.getPos().x / 3 + "," + lb.getPos().y / 3 + "), " + lb.getCurrentAnimationFrame() + "));");
 							}
 						}
-						/*for (LevelBlock<I> lb:background) {
-							if(lb.getCurrentAnimationFrame() == 101) continue;
-							System.out.println("p.background.add(new LevelBlock<>(2, new Vertex("
-									+ lb.getPos().x + "," + lb.getPos().y + "), " + lb.getCurrentAnimationFrame() + "));");
-						}*/
-						//System.out.println("p.player.getPos().moveTo(new Vertex(" + player.getPos().x + "," + player.getPos().y + "));");
 						levelbuilder = -1;
 						break;
 					case DOWN_ARROW:
