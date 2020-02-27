@@ -1,6 +1,8 @@
 package name.panitz.game.framework;
 
-public class Vertex {
+import java.io.Serializable;
+
+public class Vertex implements Serializable {
 	public double x;
 	public double y;
 

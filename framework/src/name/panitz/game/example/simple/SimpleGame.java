@@ -12,6 +12,8 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import static name.panitz.game.framework.KeyCode.NUM_0;
+
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
 	int levelbuilder = -1;
@@ -37,7 +39,13 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		player.setParent(this);
 		buttons.add(new Button("Reset Level", () -> resetLvl(0)));
 		buttons.add(new Button("toggle Sound", this::toggleMute));
-		buttons.add(new Button("toggle LevelBuilder", () -> levelbuilder = (levelbuilder==-1)?blocks.size()-1:-1));
+		buttons.add(new Button("toggle LevelBuilder", () -> {
+			resetLvl(2);
+			levelbuilder = (levelbuilder==-1)?blocks.size()-1:-1;
+			currentEdited=blocks.get(0);
+			otherObjs.remove(coinDisplay);
+			otherObjs.remove(coinDisplayBg);
+		}));
 		resetLvl(0);
 		// setup
 		getGOss().add(background);
@@ -56,6 +64,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		playSound(new SoundObject<>(fname));
 	}
 	public void resetLvl(int levelID) {
+		if(levelID == -1) System.exit(0);
 		items.clear();
 		blocks.clear();
 		pushables.clear();
@@ -149,7 +158,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		items.addAll(toAdd);
 		toAdd.clear();
 		if (toEnter != null) {
-			toEnter.enter();
+			resetLvl(toEnter.enter());
 			return;
 		}
 		pushables.sort((pb1, pb2) -> {
@@ -215,7 +224,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				s.setMood(3);
 				s.setFacing(player.getObjectCenter().connection(s.getObjectCenter()).x > 0);
 				// is player stomping
-				if(player.fallingOnTopOf(s) && player.getVelocity().y > 7.2) { // stomp power needed
+				if(player.fallingOnTopOf(s) && player.getVelocity().y > 8) { // stomp power needed
 					System.out.println("StompPower = " + player.getVelocity().y);
 					s.setMood(5);
 				} else {
@@ -307,8 +316,9 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	}
 	@Override
 	public boolean isStopped() {
-		return false;
+		return levelbuilder > -1;
 	}
+	private GameObject<I> currentEdited;
 	@Override
 	public void keyPressedReaction(KeyCode keycode) {
 		// listener
@@ -343,66 +353,125 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			if(levelbuilder > -1) {
 				switch(keycode) {
 					case NUM_2: // mv down
-						blocks.get(levelbuilder).getPos().move(new Vertex(0,8*3));
+						currentEdited.getPos().move(new Vertex(0, 8 * 3));
 						break;
 					case NUM_4: // mv left
-						blocks.get(levelbuilder).getPos().move(new Vertex(-8*3,0));
+						currentEdited.getPos().move(new Vertex(-8 * 3, 0));
 						break;
 					case NUM_6: // mv right
-						blocks.get(levelbuilder).getPos().move(new Vertex(8*3,0));
+						currentEdited.getPos().move(new Vertex(8 * 3, 0));
 						break;
 					case NUM_8: // mv up
-						blocks.get(levelbuilder).getPos().move(new Vertex(0,-8*3));
+						currentEdited.getPos().move(new Vertex(0, -8 * 3));
 						break;
 					case VK_Y: // generate new fg
-						blocks.add(new LevelBlock<>(0, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
-						levelbuilder = blocks.size()-1;
+						blocks.add(new LevelBlock<>(0, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						currentEdited = blocks.get(blocks.size() - 1);
 						break;
 					case VK_X: // generate fg2
-						blocks.add(new LevelBlock<>(1, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
-						levelbuilder = blocks.size()-1;
+						pushables.add(new PushableBlock<>(1, pushables.get(pushables.size() - 1).getPos().mult(1 / 3.0), new Vertex(0, 0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						currentEdited = pushables.get(pushables.size() - 1);
 						break;
 					case VK_C: // generate new bg
-						blocks.add(new LevelBlock<>(2, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0),levelbuilder < blocks.size() ? blocks.get(levelbuilder).getCurrentAnimationFrame() : 0));
-						levelbuilder = blocks.size()-1;
+						background.add(new LevelBlock<>(2, background.get(background.size() - 1).getPos().mult(1 / 3.0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						currentEdited = background.get(background.size() - 1);
+						break;
+					case VK_V:
+						items.add(new Coin<>(new Vertex(0,0), new Vertex(0,0)));
+						currentEdited = items.get(items.size()-1);
+						break;
+					case VK_B:
+						items.add(new Skeleton<>(new Vertex(0,0), new Vertex(0,0)));
+						currentEdited = items.get(items.size()-1);
+						break;
+					case VK_N:
+						items.add(new Door<>(new Vertex(0,14),0));
+						currentEdited = items.get(items.size()-1);
 						break;
 					case NUM_3: // prev Frame
-						blocks.get(levelbuilder).setCurrentAnimationFrame(blocks.get(levelbuilder).getCurrentAnimationFrame()-1);
+						if (currentEdited instanceof ImageObject)
+							((ImageObject<I>) currentEdited).setCurrentAnimationFrame(((ImageObject<I>) currentEdited).getCurrentAnimationFrame() - 1);
 						break;
 					case NUM_9: // next frame
-						blocks.get(levelbuilder).setCurrentAnimationFrame(blocks.get(levelbuilder).getCurrentAnimationFrame()+1);
+						if (currentEdited instanceof ImageObject)
+							((ImageObject<I>) currentEdited).setCurrentAnimationFrame(((ImageObject<I>) currentEdited).getCurrentAnimationFrame() + 1);
 						break;
 					case NUM_1: // prev Block
-						levelbuilder--;
-						break;
-					case NUM_7: // next Block
-						levelbuilder = Math.min(levelbuilder+1,blocks.size()-1);
-						break;
-					case NUM_0: // delete
-						blocks.remove(levelbuilder);
-
-						levelbuilder--;
-						break;
-					case NUM_5: // export
-						int counter = 0;
-						// TODO summarize
-						for (LevelBlock<I> lb:blocks) {
-							counter++;
-							if(counter <= 216) continue; //border skip
-							if((lb.gameObjectId-10) == 2){
-								System.out.println("p.background.add(new LevelBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
-										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), " + lb.getCurrentAnimationFrame() + "));");
-							}else if(lb.getCurrentAnimationFrame() >= 71 && lb.getCurrentAnimationFrame() <= 80 || lb.getCurrentAnimationFrame() >= 97){
-								System.out.println("p.climbables.add(new LevelBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
-										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), " + lb.getCurrentAnimationFrame() + "));");
-							}else if(lb.getCurrentAnimationFrame() >= 45 && lb.getCurrentAnimationFrame() <= 54){
-								System.out.println("p.pushables.add(new PushableBlock<>(" + (lb.gameObjectId-10) + ", new Vertex("
-										+ lb.getPos().x/3 + "," + lb.getPos().y/3 + "), new Vertex(0, 0), " + lb.getCurrentAnimationFrame() + "));");
-							}else {
-								System.out.println("p.blocks.add(new LevelBlock<>(" + (lb.gameObjectId - 10) + ", new Vertex("
-										+ lb.getPos().x / 3 + "," + lb.getPos().y / 3 + "), " + lb.getCurrentAnimationFrame() + "));");
+					{
+						GameObject<I> prev = currentEdited;
+						outer:for (List<? extends GameObject<I>> a : getGOss()) {
+							for (GameObject<I> g : a) {
+								if (g.equals(currentEdited)) {
+									currentEdited = prev;
+									break outer;
+								}
+								prev = g;
 							}
 						}
+						break;
+					}
+					case NUM_7: // next Block
+					{
+						boolean next = false;
+						outer:for (List<? extends GameObject<I>> a : getGOss()) {
+							for (GameObject<I> g : a) {
+								if(next) {
+									currentEdited = g;
+									break outer;
+								}
+								if (g.equals(currentEdited)) {
+									next = true;
+								}
+							}
+						}
+						break;
+					}
+					case VK_U:
+						currentEdited = blocks.get(blocks.size()-1);
+						break;
+					case VK_Z:
+						currentEdited = background.get(background.size()-1);
+						break;
+					case VK_I:
+						currentEdited = items.get(0);
+						break;
+					case VK_P:
+						currentEdited = pushables.get(0);
+						break;
+					case VK_O:
+						currentEdited = climbables.get(0);
+						break;
+					case VK_T:
+						currentEdited = otherObjs.get(0);
+						break;
+					case NUM_0: // delete
+						if(currentEdited instanceof LevelBlock)
+							blocks.remove(currentEdited);
+						if(currentEdited instanceof LevelBlock)
+							climbables.remove(currentEdited);
+						if(currentEdited instanceof LevelBlock)
+							background.remove(currentEdited);
+						if(currentEdited instanceof ImageObject)
+							items.remove(currentEdited);
+						if(currentEdited instanceof PushableBlock)
+							pushables.remove(currentEdited);
+						otherObjs.remove(currentEdited);
+						GameObject<I> prev = currentEdited;
+						{
+							outer:
+							for (List<? extends GameObject<I>> a : getGOss()) {
+								for (GameObject<I> g : a) {
+									if (g.equals(currentEdited)) {
+										currentEdited = prev;
+										break outer;
+									}
+									prev = g;
+								}
+							}
+						}
+						break;
+					case NUM_5: // export
+						new LevelBuilder<>(this).serialize();
 						levelbuilder = -1;
 						break;
 					case DOWN_ARROW:
@@ -412,13 +481,12 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						player.getPos().move(new Vertex(0,-8));
 						break;
 					case LEFT_ARROW:
-						player.getPos().move(new Vertex(-8,0));
-						break;
+						player.getPos().move(new Vertex(-16,0));
 					case RIGHT_ARROW:
 						player.getPos().move(new Vertex(8,0));
+						moveViewport();
 						break;
 				}
-				System.out.println(levelbuilder);
 			}
 		}
 	}

@@ -4,6 +4,8 @@ package name.panitz.game.example.simple;
 import name.panitz.game.framework.ImageObject;
 import name.panitz.game.framework.Vertex;
 
+import java.io.Serializable;
+
 
 public class LevelBlock<I> extends ImageObject<I> {
 	LevelBlock(int layer, Vertex pos, int tileId, double objZoom) {

@@ -2,7 +2,9 @@ package name.panitz.game.example.simple;
 
 import name.panitz.game.framework.Vertex;
 
-public class Rect {
+import java.io.Serializable;
+
+public class Rect implements Serializable {
 	private Vertex v1;
 	private Vertex v2;
 

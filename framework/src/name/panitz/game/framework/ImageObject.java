@@ -11,7 +11,7 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 	protected int animationSpeed = 4; // higher is slower, -1 = off
 	String imageFileName;
 	public int gameObjectId;
-	I img;
+	transient I img;
 	protected Rect cutout;
 	private boolean fixed = false;
 	protected Vertex cutoutOffset = new Vertex(0,0); // offset from image to actual hitbox
@@ -65,7 +65,7 @@ public class ImageObject<I> extends AbstractGameObject<I> {
 	@Override
 	public void paintTo(GraphicsTool<I> g) {
 		animate();
-		if (changed) {
+		if (changed || img == null) {
 			img = g.generateImage(imageFileName, this);
 			changed = false;
 		}

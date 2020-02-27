@@ -1,6 +1,8 @@
 package name.panitz.game.framework;
 
-public abstract class AbstractGameObject<I> implements GameObject<I> {
+import java.io.Serializable;
+
+public abstract class AbstractGameObject<I> implements GameObject<I>, Serializable {
 	double width;
 	double height;
 	Vertex position;
