@@ -8,7 +8,19 @@ public class TextObject<I> extends AbstractGameObject<I> {
 	public void setText(String text) {
 		this.text = text;
 	}
+	public String getText() {
+		return text;
+	}
 	private String text;
+	public String getFontName() {
+		return fontName;
+	}
+	public int getFontSize() {
+		return fontSize;
+	}
+	public Color getColor() {
+		return color;
+	}
 	public String fontName;
 	public int fontSize;
 	public Color color;

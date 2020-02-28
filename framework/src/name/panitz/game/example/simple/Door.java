@@ -5,6 +5,11 @@ import name.panitz.game.framework.Vertex;
 
 public class Door<I> extends ImageObject<I> {
 	private boolean open = false;
+
+	public int getLvlToEnter() {
+		return lvlToEnter;
+	}
+
 	private int lvlToEnter;
 	public Door(Vertex pos, int lvlToEnter) {
 		super(4, pos, new Vertex(0,0));

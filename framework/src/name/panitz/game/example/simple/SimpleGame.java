@@ -4,16 +4,10 @@ import name.panitz.game.framework.*;
 import name.panitz.game.framework.Button;
 import name.panitz.game.framework.swing.SwingGame;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
-
-import static name.panitz.game.example.simple.SpriteGrid.getListFromID;
-import static name.panitz.game.framework.KeyCode.NUM_0;
 
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
@@ -27,6 +21,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	List<ImageObject<I>> toDel = new ArrayList<>(); // list modifiers
 	List<ImageObject<I>> toAdd = new ArrayList<>();
 	Player<I, S> player;
+	int aktLvl = 0;
 	TextObject<I> coinDisplay = new TextObject<>(new Vertex(10, 32), "", "Times New Roman Bold", 30, new Color(0xE3A569));
 	LevelBlock<I> coinDisplayBg = new LevelBlock<>(0, new Vertex(-7, -14), 102, 3, true);
 	public static boolean muteSound = true;
@@ -38,15 +33,16 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		super(new Player<>(new Vertex(0, 0), new Vertex(0, 0),2.9), windowSize.x, windowSize.y);
 		player = (Player<I, S>) super.player;
 		player.setParent(this);
-		buttons.add(new Button("Reset Level", () -> resetLvl(0)));
-		buttons.add(new Button("toggle Sound", this::toggleMute));
-		buttons.add(new Button("toggle LevelBuilder", () -> {
+		buttons.add(new Button("Reset Level", () -> resetLvl(aktLvl)));
+		buttons.add(new Button("Sound an/aus", this::toggleMute));
+		buttons.add(new Button("LevelBuilder an/aus", () -> {
 			resetLvl(2);
 			levelbuilder = (levelbuilder==-1)?blocks.size()-1:-1;
 			currentEdited=blocks.get(0);
 			otherObjs.remove(coinDisplay);
 			otherObjs.remove(coinDisplayBg);
 		}));
+		buttons.add(new Button("Hauptmenü",() -> resetLvl(0)));
 		resetLvl(0);
 		// setup
 		getGOss().add(background);
@@ -80,6 +76,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			otherObjs.add(coinDisplay);
 		}
 		new LevelBuilder<>(this).makeLvl(levelID);
+		aktLvl = levelID;
 		pSound("pop.wav");
 	}
 	@Override
@@ -397,6 +394,38 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						items.add(new Door<>(new Vertex(0,14),0));
 						currentEdited = items.get(items.size()-1);
 						break;
+					case VK_L:
+						otherObjs.add(new TextObject<>(new Vertex(100,100), (String) JOptionPane.showInputDialog(
+								null,
+								"Text für Text-Item:",
+								"",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
+								""), (String) JOptionPane.showInputDialog(
+								null,
+								"Schriftart für Text-Item:",
+								"",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								List.of("Times New Roman","Times New Roman Bold").toArray(),
+								"Times New Roman"),Integer.parseInt((String) JOptionPane.showInputDialog(
+								null,
+								"Schriftgröße für Text-Item (Zahl):",
+								"",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
+								"")),new Color(Integer.parseInt((String) JOptionPane.showInputDialog(
+								null,
+								"HEX-Farbe für Text-Item (ohne # oder 0x):",
+								"",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
+								""),16))));
+						currentEdited = otherObjs.get(otherObjs.size()-1);
+						break;
 					case NUM_3: // prev Frame
 						if (currentEdited instanceof ImageObject)
 							((ImageObject<I>) currentEdited).setCurrentAnimationFrame(((ImageObject<I>) currentEdited).getCurrentAnimationFrame() - 1);
@@ -480,8 +509,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						}
 						break;
 					case NUM_5: // export
-						//new LevelBuilder<>(this).serialize();
-						//levelbuilder = -1;
+						new LevelBuilder<>(this).exportLvl();
+						levelbuilder = -1;
 						break;
 					case DOWN_ARROW:
 						player.getPos().move(new Vertex(0,8));
