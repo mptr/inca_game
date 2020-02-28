@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import static name.panitz.game.example.simple.SpriteGrid.getListFromID;
 import static name.panitz.game.framework.KeyCode.NUM_0;
 
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
@@ -54,6 +55,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		getGOss().add(items);
 		getGOss().add(pushables);
 		getGOss().add(otherObjs);
+
 	}
 	public void toggleMute() {
 		muteSound = !muteSound;
@@ -72,6 +74,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		climbables.clear();
 		background.clear();
 		otherObjs.clear();
+		if(levelID == -2) return;
 		if(levelID != 0) {
 			otherObjs.add(coinDisplayBg);
 			otherObjs.add(coinDisplay);
@@ -319,6 +322,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		return levelbuilder > -1;
 	}
 	private GameObject<I> currentEdited;
+	private int moveFactor = 8;
 	@Override
 	public void keyPressedReaction(KeyCode keycode) {
 		// listener
@@ -346,35 +350,40 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				case VK_S:
 					player.setClimbing(1);
 					break;
-				case VK_C:
-					player.setCollectedCoins(player.getCollectedCoins()+1);
 				default:
 			}
 			if(levelbuilder > -1) {
 				switch(keycode) {
+					case VK_F:
+						moveFactor = moveFactor==8?1:8;
+						break;
 					case NUM_2: // mv down
-						currentEdited.getPos().move(new Vertex(0, 8 * 3));
+						currentEdited.getPos().move(new Vertex(0, moveFactor* 3));
 						break;
 					case NUM_4: // mv left
-						currentEdited.getPos().move(new Vertex(-8 * 3, 0));
+						currentEdited.getPos().move(new Vertex(-moveFactor * 3, 0));
 						break;
 					case NUM_6: // mv right
-						currentEdited.getPos().move(new Vertex(8 * 3, 0));
+						currentEdited.getPos().move(new Vertex(moveFactor * 3, 0));
 						break;
 					case NUM_8: // mv up
-						currentEdited.getPos().move(new Vertex(0, -8 * 3));
+						currentEdited.getPos().move(new Vertex(0, -moveFactor * 3));
 						break;
 					case VK_Y: // generate new fg
-						blocks.add(new LevelBlock<>(0, blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						blocks.add(new LevelBlock<>(0, blocks.size()>0?blocks.get(blocks.size() - 1).getPos().mult(1 / 3.0):new Vertex(0,0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
 						currentEdited = blocks.get(blocks.size() - 1);
 						break;
 					case VK_X: // generate fg2
-						pushables.add(new PushableBlock<>(1, pushables.get(pushables.size() - 1).getPos().mult(1 / 3.0), new Vertex(0, 0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						pushables.add(new PushableBlock<>(1, pushables.size()>0?pushables.get(pushables.size() - 1).getPos().mult(1 / 3.0):new Vertex(0,0), new Vertex(0, 0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
 						currentEdited = pushables.get(pushables.size() - 1);
 						break;
 					case VK_C: // generate new bg
-						background.add(new LevelBlock<>(2, background.get(background.size() - 1).getPos().mult(1 / 3.0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						background.add(new LevelBlock<>(2, background.size()>0?background.get(background.size() - 1).getPos().mult(1 / 3.0):new Vertex(0,0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
 						currentEdited = background.get(background.size() - 1);
+						break;
+					case VK_M: // generate new climbable
+						climbables.add(new LevelBlock<>(0, climbables.size()>0?climbables.get(climbables.size() - 1).getPos().mult(1 / 3.0):new Vertex(0,0), currentEdited instanceof ImageObject ? ((ImageObject<I>) currentEdited).getCurrentAnimationFrame() : 0));
+						currentEdited = climbables.get(climbables.size() - 1);
 						break;
 					case VK_V:
 						items.add(new Coin<>(new Vertex(0,0), new Vertex(0,0)));
@@ -433,16 +442,16 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						currentEdited = background.get(background.size()-1);
 						break;
 					case VK_I:
-						currentEdited = items.get(0);
+						currentEdited = items.get(items.size()-1);
 						break;
 					case VK_P:
-						currentEdited = pushables.get(0);
+						currentEdited = pushables.get(pushables.size()-1);
 						break;
 					case VK_O:
-						currentEdited = climbables.get(0);
+						currentEdited = climbables.get(climbables.size()-1);
 						break;
 					case VK_T:
-						currentEdited = otherObjs.get(0);
+						currentEdited = otherObjs.get(otherObjs.size()-1);
 						break;
 					case NUM_0: // delete
 						if(currentEdited instanceof LevelBlock)
@@ -471,8 +480,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 						}
 						break;
 					case NUM_5: // export
-						new LevelBuilder<>(this).serialize();
-						levelbuilder = -1;
+						//new LevelBuilder<>(this).serialize();
+						//levelbuilder = -1;
 						break;
 					case DOWN_ARROW:
 						player.getPos().move(new Vertex(0,8));

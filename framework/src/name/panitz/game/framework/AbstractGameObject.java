@@ -54,7 +54,10 @@ public abstract class AbstractGameObject<I> implements GameObject<I>, Serializab
 		if (height == 0)
 			height = h;
 	}
-
+	/*public void resetHW() {
+		height = 0;
+		width = 0;
+	}*/
 	@Override
 	public Vertex getVelocity() {
 		return velocity;
@@ -65,4 +68,5 @@ public abstract class AbstractGameObject<I> implements GameObject<I>, Serializab
 		velocity = v;
 	}
 }
+
 
