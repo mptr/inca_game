@@ -6,8 +6,10 @@ import name.panitz.game.framework.swing.SwingGame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	// Objektlisten
@@ -82,8 +84,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	}
 	@Override
 	public void doChecks() {
-		Door<I> toEnter = null;
 		if (levelbuilder > -1) return;
+		Door<I> toEnter = null;
 		// spawn arrows
 		for (LevelBlock<I> b : blocks) {
 			if (Math.random() > .005) continue; // randomize
@@ -111,9 +113,20 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				}
 			}
 			if (item instanceof Skeleton) {
-				if (!skeletonKi((Skeleton<I>) item)) {
+				if(item.getPos().x > 10000 || item.getPos().x < -100) { // entity out of view -> respawn
+					item.getPos().moveTo(((Skeleton<I>) item).getSpawnPos());
+				}
+				if (!skeletonKi((Skeleton<I>) item) || item.getPos().x + item.getPos().y > 10000) {
 					toDel.add(item);
-					toAdd.add(new Skeleton<>(((Skeleton<I>) item).getSpawnPos(), new Vertex(0, 0)));
+					new java.util.Timer().schedule(
+							new java.util.TimerTask() {
+								@Override
+								public void run() {
+									toAdd.add(new Skeleton<>(((Skeleton<I>) item).getSpawnPos(), new Vertex(0, 0)));
+								}
+							},
+							1000
+					); // respawn after 1s
 				}
 			}
 			if (item instanceof FallingImage) {
@@ -180,7 +193,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				}
 			}
 		}
-		if(player.getPos().y > gameSize.y*16*3+200 && player.getDeathTimer() == 0) {
+		if(player.getPos().y < -100 && player.getDeathTimer() == 0) {
 			player.getPos().moveTo(spawnPos);
 			player.getVelocity().moveTo(new Vertex(0,0));
 			player.startJump(0);

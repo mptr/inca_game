@@ -50,7 +50,7 @@ public class Player<I, S> extends FallingImage<I> {
 	public void move() {
 		if(deathTimer > 0) {
 			deathTimer++;
-			getPos().moveTo(new Vertex(0,10000));
+			getPos().moveTo(new Vertex(0,-10000));
 		}
 		if(deathTimer >= 100) {
 			deathTimer = 0;

@@ -7,7 +7,7 @@ import name.panitz.game.framework.Vertex;
 import java.util.List;
 
 public class Skeleton<I> extends FallingImage<I> {
-	int mood = 0;
+	int mood = 1;
 	int nextMood = 0;
 	private int kiTimer = 0;
 	Vertex initialSize;
@@ -44,6 +44,7 @@ public class Skeleton<I> extends FallingImage<I> {
 		}
 	}
 	public void initWalking(double s) {
+		System.out.println("init: " + s);
 		if(Math.abs(s) > .1) {
 			setMood(1);
 		} else {
@@ -62,9 +63,6 @@ public class Skeleton<I> extends FallingImage<I> {
 		} else {
 			setMood(0);
 		}*/
-		if(Math.abs(getVelocity().x) > .1 && getMood() == 0) { // anti moonwalk
-			setMood(1);
-		}
 		super.move();
 		kiTimer++;
 	}
