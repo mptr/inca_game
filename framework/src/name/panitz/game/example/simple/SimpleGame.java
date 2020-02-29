@@ -201,7 +201,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			pSound("pop.wav");
 		} else //noinspection StatementWithEmptyBody
 			if(player.getAnimationFrameSkip() == 0 && (player.getCurrentAnimationFrame() == 0 || player.getCurrentAnimationFrame() == 2)&& player.isJumping == 0 && player.getVelocity().y == 0 && Math.abs(player.getVelocity().x) > 0.5) {
-//			pSound("walking.wav");
+			pSound("walking.wav"); // ggf auskommentieren in Linux
 		}
 		moveViewport();
 	}

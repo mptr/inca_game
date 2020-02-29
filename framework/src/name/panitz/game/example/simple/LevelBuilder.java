@@ -85,7 +85,7 @@ public class LevelBuilder<I, S> {
 					return;
 				}
 			} else {
-				in = new BufferedReader(new InputStreamReader(new FileInputStream(Objects.requireNonNull(getClass().getClassLoader().getResource(fName)).getFile()), StandardCharsets.UTF_8));
+				in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + fName), StandardCharsets.UTF_8));
 			}
 			String item;
 			while((item = in.readLine()) != null) {
