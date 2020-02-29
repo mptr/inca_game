@@ -38,6 +38,10 @@ public interface GameObject<I> extends Movable, Paintable<I> {
 		if (this.isAbove(that)) return false;
 		return !that.isAbove(this);
 	}
+	default boolean containsPoint(Vertex that) {
+		return (that.x > getPos().x && that.x < getPos().x + getWidth()
+				&& that.y > getPos().y && that.y < getPos().y + getHeight());
+	}
 	default boolean fallingOnTopOf(GameObject<?> that) {
 		return !(isLeftOf(that) || isRightOf(that)) && getPos().y + getHeight() >= that.getPos().y + 3 && getPos().y + getHeight() < that.getPos().y + that.getHeight() && getVelocity().y >= 0.1;
 	}

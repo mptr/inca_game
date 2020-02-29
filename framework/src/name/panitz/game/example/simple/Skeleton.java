@@ -11,7 +11,6 @@ public class Skeleton<I> extends FallingImage<I> {
 	int nextMood = 0;
 	private int kiTimer = 0;
 	Vertex initialSize;
-	boolean stayOnPlatform = true;
 	public Vertex getSpawnPos() {
 		return spawnPos;
 	}
@@ -44,8 +43,7 @@ public class Skeleton<I> extends FallingImage<I> {
 			setGameObjectId(20 + mood);
 		}
 	}
-	public void initWalking(double s, boolean stayOnPlatform) {
-		this.stayOnPlatform = stayOnPlatform;
+	public void initWalking(double s) {
 		if(Math.abs(s) > .1) {
 			setMood(1);
 		} else {

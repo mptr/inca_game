@@ -37,7 +37,6 @@ public class Player<I, S> extends FallingImage<I> {
 	public void setCollectedCoins(int cc) {
 		parent.coinDisplay.setText("Coins " + toRoman(cc));
 		collectedCoins = cc;
-		System.out.println("Coins " + cc);
 	}
 	public static String toRoman(int v){
 		if(v<0||v>15) return String.valueOf(v);

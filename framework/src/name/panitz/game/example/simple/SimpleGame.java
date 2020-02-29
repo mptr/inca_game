@@ -36,13 +36,13 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 		player.setParent(this);
 		buttons.add(new Button("Reset Level", () -> resetLvl(aktLvl)));
 		buttons.add(new Button("Sound an/aus", this::toggleMute));
-		buttons.add(new Button("LevelBuilder an/aus", () -> {
-			resetLvl(2);
+		/*buttons.add(new Button("LevelBuilder an/aus", () -> {
+			resetLvl(5);
 			levelbuilder = (levelbuilder==-1)?blocks.size()-1:-1;
 			currentEdited=blocks.get(0);
 			otherObjs.remove(coinDisplay);
 			otherObjs.remove(coinDisplayBg);
-		}));
+		}));*/
 		buttons.add(new Button("Hauptmenü",() -> resetLvl(0)));
 		resetLvl(0);
 		// setup
@@ -110,16 +110,19 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 					}
 				}
 			}
-			if (item instanceof FallingImage) {
-				obstacleCollisionCheck((FallingImage<I>) item);
-			}
 			if (item instanceof Skeleton) {
 				if (!skeletonKi((Skeleton<I>) item)) {
 					toDel.add(item);
 					toAdd.add(new Skeleton<>(((Skeleton<I>) item).getSpawnPos(), new Vertex(0, 0)));
 				}
-			} else if (item instanceof Arrow) {
-				for (LevelBlock<I> b : blocks) {
+			}
+			if (item instanceof FallingImage) {
+				obstacleCollisionCheck((FallingImage<I>) item);
+			}
+			if (item instanceof Arrow) {
+				List<GameObject<I>> tmp = new ArrayList<>(blocks);
+				tmp.addAll(pushables);
+				for (GameObject<I> b : tmp) {
 					if (b.touches(item)) {
 						if (item.getVelocity().dist() > 0) {
 							pSound("arrow.wav");
@@ -240,28 +243,45 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				}
 			} else if (Math.abs(toPlayer.x) < 20) {
 				// waiting inPlace
-				s.initWalking(0,true);
+				s.initWalking(0);
 			} else {
 				// walking & chasing Player
 				if(player.isJumping > 0 && Math.abs(toPlayer.x) < 30) {
-					s.initWalking(.5 * Math.abs(player.getVelocity().x) * Math.signum(toPlayer.x),false); // follow
+					s.initWalking(.5 * Math.abs(player.getVelocity().x) * Math.signum(toPlayer.x)); // follow
 				} else {
-					s.initWalking(1.5 * Math.signum(toPlayer.x),false);
+					s.initWalking(1.5 * Math.signum(toPlayer.x));
 				}
 			}
 		} else {
 			// walk arround
-			/*if(s.getKiTimer() > 500 && s.getVelocity().x == 0) {
-				s.initWalking(.7 * Math.signum(Math.random()-.5),true);
-			} else if(s.getKiTimer() < 500) {
-//				s.initWalking(0,true);
-			} else if(Math.random() < .01) {
-				s.setKiTimer(0);
-				s.initWalking(.7 * Math.signum(Math.random()-.5),true);
-			}/* else if(Math.random() < .02) {
-				s.setKiTimer(0);
-				s.initWalking(0,true);
-			}*/
+			double walkSpeed = s.getVelocity().x;
+			if (s.getKiTimer() > 500 && Math.random() < .01) {
+				if(Math.random() < .2) {
+					walkSpeed = 0;
+					s.setKiTimer(300);
+				} else {
+					walkSpeed = .7 * Math.signum(Math.random() - .5);
+					s.setKiTimer(0);
+				}
+			}
+			Vertex probe = null;
+			if (walkSpeed < 0) {
+				probe = new Vertex(s.getPos().x + 2, s.getPos().y + s.getHeight() + 2);
+			} else if (walkSpeed > 0) {
+				probe = new Vertex(s.getPos().x + s.getWidth() + 2, s.getPos().y + s.getHeight() + 2);
+			}
+			if(probe != null) {
+				boolean voidAhead = true;
+				for (LevelBlock<I> b:blocks) {
+					if(b.containsPoint(probe)) {
+						voidAhead = false;
+						s.setKiTimer(500);
+						break;
+					}
+				}
+				walkSpeed = voidAhead?0:walkSpeed;
+			}
+			s.initWalking(walkSpeed);
 		}
 		return true;
 	}
@@ -299,46 +319,8 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			if (go.hitsBottomOf(b)) {
 				System.out.println("header");
 				go.setCanClimbUp(0);
-				System.out.println(go.getCanClimbUp());
 				go.startJump(0.1);
 				entityHasYCollision = true;
-			}
-		}
-		if(go instanceof Skeleton) {
-			Skeleton<I> tmp = (Skeleton<I>) go;
-			if(tmp.stayOnPlatform || true) {
-				boolean cornerOverBlock = false;
-				for (GameObject<I> b : blocks) {
-				/*if (tmp.getVelocity().x > 0) { // TODO enable wallcollisionchk
-					if(tmp.hitsLeftSideOf(b)) {
-						//System.out.println("left");
-						tmp.initWalking(0,true);
-						break;
-					}
-				} else {
-					if(tmp.hitsRightSideOf(b)) {
-//						System.out.println("right");
-						tmp.initWalking(0,true);
-						break;
-					}
-				}*/
-					// fall from platform check
-					if (tmp.standingOnTopOf(b)) {
-						//System.out.println(tmp.getPos().x + ", " + b.getPos().x + ", " + b.getWidth() + ", " + tmp.getVelocity());
-						if (tmp.getPos().x > b.getPos().x && tmp.getPos().x < b.getPos().x + b.getWidth() && tmp.getVelocity().x <= 0) { // left corner
-							cornerOverBlock = true;
-							break;
-						} else if (tmp.getPos().x < b.getPos().x + b.getWidth() && tmp.getPos().x > b.getPos().x && tmp.getVelocity().x >= 0) { // right corner
-							cornerOverBlock = true;
-							break;
-						}
-					}
-				}
-				System.out.println(cornerOverBlock);
-				if (!cornerOverBlock) {
-					tmp.initWalking(0, true);
-					//System.out.println(tmp.getVelocity());
-				}
 			}
 		}
 		if(!(go instanceof PushableBlock)) {

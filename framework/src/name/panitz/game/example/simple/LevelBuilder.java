@@ -28,7 +28,16 @@ public class LevelBuilder<I, S> {
 	}
 	public void exportLvl() {
 		try {
-			File fileDir = new File("framework\\levelfiles\\Level2.inca");
+			File fileDir;
+			final JFileChooser fc = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("INCA-LevelFiles (*.inca)", "inca");
+			fc.setFileFilter(filter);
+			int returnVal = fc.showOpenDialog(null);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				fileDir = fc.getSelectedFile();
+			} else {
+				return;
+			}
 			Writer ow = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileDir), StandardCharsets.UTF_8));
 			StringBuilder out = new StringBuilder();
 			out.append("pl,").append(Math.round(p.player.getPos().x)).append(",").append(Math.round(p.player.getPos().y)).append("\n");
@@ -67,6 +76,9 @@ public class LevelBuilder<I, S> {
 				int returnVal = fc.showOpenDialog(null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File fileDir = fc.getSelectedFile();
+					if(!fileDir.exists()) {
+						System.out.println(fileDir.createNewFile());
+					}
 					in = new BufferedReader(new InputStreamReader(new FileInputStream(fileDir), StandardCharsets.UTF_8));
 				} else {
 					p.resetLvl(0);
@@ -115,6 +127,11 @@ public class LevelBuilder<I, S> {
 						break;
 				}
 			}
+			if(p.blocks.size() == 0) {
+				border();
+				background();
+				p.player.getPos().moveTo(new Vertex(100,100));
+			}
 			p.items.sort((i1,i2) -> {
 				if((i1 instanceof Door)) return -1;
 				return 0;
@@ -122,6 +139,32 @@ public class LevelBuilder<I, S> {
 			in.close();
 		} catch(Exception e) {
 			e.printStackTrace();
+			p.resetLvl(0);
+		}
+	}
+	private void border() {
+		// corners
+		p.blocks.add(new LevelBlock<>(0, new Vertex(0,0),86));
+		p.blocks.add(new LevelBlock<>(0, new Vertex((SimpleGame.gameSize.x-.5)*16,0),90));
+		p.blocks.add(new LevelBlock<>(0, new Vertex(0, (SimpleGame.gameSize.y-.5)*16),87));
+		p.blocks.add(new LevelBlock<>(0, new Vertex((SimpleGame.gameSize.x-.5)*16,(SimpleGame.gameSize.y-.5)*16),91));
+		// sides
+		for (int i = 1; i < SimpleGame.gameSize.x*2-1; i++) {
+			p.blocks.add(new LevelBlock<>(0, new Vertex(i*8,0),88+(i%2)*4));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(i*8,SimpleGame.gameSize.y*16-8),85+(i%2)*4));
+		}
+		for (int i = 1; i < SimpleGame.gameSize.y*2-1; i++) {
+			p.blocks.add(new LevelBlock<>(0, new Vertex(0,i*8),94+(i%2)));
+			p.blocks.add(new LevelBlock<>(0, new Vertex(SimpleGame.gameSize.x*16-8,i*8),82+(i%2)));
+		}
+	}
+	private void background() {
+		for (int gameX = 0; gameX < SimpleGame.gameSize.x; gameX++) {
+			for (int gameY = 0; gameY < SimpleGame.gameSize.y; gameY++) {
+				p.background.add(new LevelBlock<>(2, new Vertex(gameX*16,gameY*16), 101));
+				gameY++;
+			}
+			gameX++;
 		}
 	}
 }
