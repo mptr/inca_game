@@ -20,6 +20,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 	List<PushableBlock<I>> pushables = new ArrayList<>();
 	List<ImageObject<I>> toDel = new ArrayList<>(); // list modifiers
 	List<ImageObject<I>> toAdd = new ArrayList<>();
+	Vertex spawnPos = new Vertex(16*3+50,(gameSize.y*16-16*3)*3);
 	Player<I, S> player;
 	int aktLvl = 0;
 	TextObject<I> coinDisplay = new TextObject<>(new Vertex(10, 32), "", "Times New Roman Bold", 30, new Color(0xE3A569));
@@ -115,7 +116,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			if (item instanceof Skeleton) {
 				if (!skeletonKi((Skeleton<I>) item)) {
 					toDel.add(item);
-					toAdd.add(new Skeleton<>(new Vertex(13 * gameSize.x, gameSize.y * 16 - 100), new Vertex(0, 0)));
+					toAdd.add(new Skeleton<>(((Skeleton<I>) item).getSpawnPos(), new Vertex(0, 0)));
 				}
 			} else if (item instanceof Arrow) {
 				for (LevelBlock<I> b : blocks) {
@@ -177,7 +178,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 			}
 		}
 		if(player.getPos().y > gameSize.y*16*3+200 && player.getDeathTimer() == 0) {
-			player.getPos().moveTo(new Vertex(16*3+50,(gameSize.y*16-16*3)*3));
+			player.getPos().moveTo(spawnPos);
 			player.getVelocity().moveTo(new Vertex(0,0));
 			player.startJump(0);
 			System.out.println("reset Player");
@@ -224,7 +225,7 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				s.setMood(3);
 				s.setFacing(player.getObjectCenter().connection(s.getObjectCenter()).x > 0);
 				// is player stomping
-				if(player.fallingOnTopOf(s) && player.getVelocity().y > 8) { // stomp power needed
+				if(player.fallingOnTopOf(s) && player.getVelocity().y > 8.5) { // stomp power needed
 					System.out.println("StompPower = " + player.getVelocity().y);
 					s.setMood(5);
 				} else {
@@ -239,22 +240,28 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				}
 			} else if (Math.abs(toPlayer.x) < 20) {
 				// waiting inPlace
-				s.initWalking(0,blocks);
+				s.initWalking(0,true);
 			} else {
 				// walking & chasing Player
 				if(player.isJumping > 0 && Math.abs(toPlayer.x) < 30) {
-					s.initWalking(.5 * Math.abs(player.getVelocity().x) * Math.signum(toPlayer.x), blocks); // follow little slower than player is jumping
+					s.initWalking(.5 * Math.abs(player.getVelocity().x) * Math.signum(toPlayer.x),false); // follow
 				} else {
-					s.initWalking(1.5 * Math.signum(toPlayer.x), blocks);
+					s.initWalking(1.5 * Math.signum(toPlayer.x),false);
 				}
 			}
 		} else {
 			// walk arround
-			if(s.getKiTimer() > 500 && s.getVelocity().x == 0) {
-				s.initWalking(.7 * Math.signum(Math.random()-.5), blocks);
+			/*if(s.getKiTimer() > 500 && s.getVelocity().x == 0) {
+				s.initWalking(.7 * Math.signum(Math.random()-.5),true);
 			} else if(s.getKiTimer() < 500) {
-				s.initWalking(0,blocks);
-			}
+//				s.initWalking(0,true);
+			} else if(Math.random() < .01) {
+				s.setKiTimer(0);
+				s.initWalking(.7 * Math.signum(Math.random()-.5),true);
+			}/* else if(Math.random() < .02) {
+				s.setKiTimer(0);
+				s.initWalking(0,true);
+			}*/
 		}
 		return true;
 	}
@@ -295,6 +302,43 @@ public class SimpleGame<I, S> extends AbstractGame<I, S> {
 				System.out.println(go.getCanClimbUp());
 				go.startJump(0.1);
 				entityHasYCollision = true;
+			}
+		}
+		if(go instanceof Skeleton) {
+			Skeleton<I> tmp = (Skeleton<I>) go;
+			if(tmp.stayOnPlatform || true) {
+				boolean cornerOverBlock = false;
+				for (GameObject<I> b : blocks) {
+				/*if (tmp.getVelocity().x > 0) { // TODO enable wallcollisionchk
+					if(tmp.hitsLeftSideOf(b)) {
+						//System.out.println("left");
+						tmp.initWalking(0,true);
+						break;
+					}
+				} else {
+					if(tmp.hitsRightSideOf(b)) {
+//						System.out.println("right");
+						tmp.initWalking(0,true);
+						break;
+					}
+				}*/
+					// fall from platform check
+					if (tmp.standingOnTopOf(b)) {
+						//System.out.println(tmp.getPos().x + ", " + b.getPos().x + ", " + b.getWidth() + ", " + tmp.getVelocity());
+						if (tmp.getPos().x > b.getPos().x && tmp.getPos().x < b.getPos().x + b.getWidth() && tmp.getVelocity().x <= 0) { // left corner
+							cornerOverBlock = true;
+							break;
+						} else if (tmp.getPos().x < b.getPos().x + b.getWidth() && tmp.getPos().x > b.getPos().x && tmp.getVelocity().x >= 0) { // right corner
+							cornerOverBlock = true;
+							break;
+						}
+					}
+				}
+				System.out.println(cornerOverBlock);
+				if (!cornerOverBlock) {
+					tmp.initWalking(0, true);
+					//System.out.println(tmp.getVelocity());
+				}
 			}
 		}
 		if(!(go instanceof PushableBlock)) {

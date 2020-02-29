@@ -7,6 +7,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class LevelBuilder<I, S> {
@@ -81,6 +82,7 @@ public class LevelBuilder<I, S> {
 				switch (attrs[0]) {
 					case "pl":
 						p.player.getPos().moveTo(new Vertex(Integer.parseInt(attrs[1]),Integer.parseInt(attrs[2])));
+						p.spawnPos = new Vertex(Integer.parseInt(attrs[1]),Integer.parseInt(attrs[2]));
 						break;
 					case "bl":
 						p.blocks.add(new LevelBlock<>(0, new Vertex(Integer.parseInt(attrs[1]),Integer.parseInt(attrs[2])).mult(1/3.0), Integer.parseInt(attrs[3])));
@@ -113,6 +115,10 @@ public class LevelBuilder<I, S> {
 						break;
 				}
 			}
+			p.items.sort((i1,i2) -> {
+				if((i1 instanceof Door)) return -1;
+				return 0;
+			});
 			in.close();
 		} catch(Exception e) {
 			e.printStackTrace();

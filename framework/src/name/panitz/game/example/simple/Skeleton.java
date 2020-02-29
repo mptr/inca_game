@@ -1,6 +1,7 @@
 package name.panitz.game.example.simple;
 
 import name.panitz.game.framework.FallingImage;
+import name.panitz.game.framework.GameObject;
 import name.panitz.game.framework.Vertex;
 
 import java.util.List;
@@ -10,9 +11,15 @@ public class Skeleton<I> extends FallingImage<I> {
 	int nextMood = 0;
 	private int kiTimer = 0;
 	Vertex initialSize;
+	boolean stayOnPlatform = true;
+	public Vertex getSpawnPos() {
+		return spawnPos;
+	}
+	Vertex spawnPos;
 	Skeleton(Vertex pos, Vertex motion, double objZoom) {
 		super(20, pos, motion, objZoom);
 		initialSize = new Vertex(getWidth(), getHeight());
+		spawnPos = pos.mult(1); // copy
 	}
 	Skeleton(Vertex pos, Vertex motion) {
 		this(pos, motion, 3);
@@ -37,36 +44,28 @@ public class Skeleton<I> extends FallingImage<I> {
 			setGameObjectId(20 + mood);
 		}
 	}
-	public void initWalking(double speed, List<LevelBlock<I>> bs) {
-		if(speed > 0) {
-			for (LevelBlock<I> b:bs) {
-				if(hitsLeftSideOf(b)) {
-					speed = 0;
-					break;
-				}
-			}
-		} else if(speed < 0) {
-			for (LevelBlock<I> b:bs) {
-				if(hitsRightSideOf(b)) {
-					speed = 0;
-					break;
-				}
-			}
-
-		}
-		if(speed == 0) {
-			setMood(0);
-		} else {
+	public void initWalking(double s, boolean stayOnPlatform) {
+		this.stayOnPlatform = stayOnPlatform;
+		if(Math.abs(s) > .1) {
 			setMood(1);
+		} else {
+			setMood(0);
 		}
-		getVelocity().moveTo(new Vertex(speed, getVelocity().y));
+		getVelocity().moveTo(new Vertex(s, getVelocity().y));
 	}
 	@Override
 	public void move() {
-		if(mood == 5 || mood == 3 || mood == 0) { // dont walk when dead, attacking or idle
+		if(mood == 5 || mood == 3) { // dont walk when dead, attacking or idle
 			setVelocity(getVelocity().mult(new Vertex(0,1)));
-			if(mood != 0)
-				kiTimer = 0;
+//			if(mood != 0)
+//				kiTimer = 0;
+		} /*else if(Math.abs(getVelocity().x) > 0.1) {
+			setMood(1);
+		} else {
+			setMood(0);
+		}*/
+		if(Math.abs(getVelocity().x) > .1 && getMood() == 0) { // anti moonwalk
+			setMood(1);
 		}
 		super.move();
 		kiTimer++;
