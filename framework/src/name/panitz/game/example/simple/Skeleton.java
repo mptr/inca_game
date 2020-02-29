@@ -44,7 +44,6 @@ public class Skeleton<I> extends FallingImage<I> {
 		}
 	}
 	public void initWalking(double s) {
-		System.out.println("init: " + s);
 		if(Math.abs(s) > .1) {
 			setMood(1);
 		} else {

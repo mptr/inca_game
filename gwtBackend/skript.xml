@@ -8,7 +8,7 @@
 <content>
   <paragraph><title>Installation</title>
   <paragraph><title>Struktur und Konfiguration</title>
-  Nehmen sie den kompletten Ordner der gwt-Implementierung. Kopieren Sie die Quellen der Rahmenbibliothek in den Ordner <tt>src/main/java</tt>. Kopieren Sie auch die Quelltexte Ihres individuellen Spiels dorthin. Kopieren Sie Klang- und Bilddateien in den Ordner <tt>src/main/webapp/</tt>.
+  Nehmen die den kompletten Ordner der gwt-Implementierung. Kopieren Sie die Quellen der Rahmenbibliothek in den Ordner <tt>src/main/java</tt>. Kopieren Sie auch die Quelltexte Ihres individuellen Spiels dorthin. Kopieren Sie Klang- und Bilddateien in den Ordner <tt>src/main/webapp/</tt>.
 
   In der Klasse<br/>
   <tt>name.panitz.game.framework.gwt.client.WebGames</tt><br/>

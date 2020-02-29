@@ -11,36 +11,17 @@ import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.canvas.dom.client.CssColor;
 
+import java.awt.*;
+
 public class GWTGraphics implements GraphicsTool<ImageElement>{
   Context2d gc;
 	
   public GWTGraphics(Context2d gc) {
     this.gc = gc;
   }
-
   @Override
-  public void drawImage(ImageElement img, double x, double y) {
-    gc.drawImage(img, x, y);
-  }
-
-  @Override
-  public void drawRect(double x, double y, double w, double h) {
-    gc.rect(x, y, w, h);
-  }
-
-  @Override
-  public void fillRect(double x, double y, double w, double h) {
-    gc.fillRect(x, y, w, h);
-  }
-
-  @Override
-  public void drawOval(double x, double y, double w, double h) {
-    // TODO 
-  }
-
-  @Override
-  public void fillOval(double x, double y, double w, double h) {
-    // TODO 
+  public void drawImage(ImageElement img, double x, double y, double width, double height, int sx1, int sy1, int sx2, int sy2) {
+    gc.drawImage(img, x, y, width, height, sx1, sy1, sx2-sx1, sy2-sy1);
   }
 
   @Override
@@ -51,14 +32,10 @@ public class GWTGraphics implements GraphicsTool<ImageElement>{
     gc.stroke();
   }
 
-  
-  public void setColor(double r ,double g ,double b){
-    gc.setFillStyle(CssColor.make("rgba("+r*255+","+g*255+","+b*255+",1)")); 
-  }
-  
   @Override
-  public void drawString(double x,double y,int fontSize, String fontName, String text){
-    gc.setFont(fontSize+"pt "+fontName);
+  public void drawString(double x, double y, int fntsize, String fntName, String text, Color c) {
+    gc.setFillStyle(CssColor.make("rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+",1)"));
+    gc.setFont(fntsize+"pt "+fntName);
     gc.fillText(text, x, y);
   }
 

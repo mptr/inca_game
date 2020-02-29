@@ -172,4 +172,47 @@ public class SpriteGrid {
 		if(s0 != 2) return new Vertex(0,0);
 		return skeletonOffsets.get(s1);
 	}
+	// for GWT SpriteGrid
+	public static void exportGrid() {
+		System.out.println("public static final List<Rect> blockGrid = List.of(");
+		for (Rect r:blockGrid) {
+			System.out.print("\tnew Rect(" + Math.round(r.getV1().x) + "," + Math.round(r.getV1().y) + "," + Math.round(r.getV2().x) + "," + Math.round(r.getV2().y) + ")");
+			if(!r.equals(blockGrid.get(blockGrid.size()-1))) System.out.println(",");
+			else System.out.println();
+		}
+		System.out.println(");");
+		System.out.println("public static final List<Rect> coinGrid = List.of(");
+		for (Rect r:coinGrid) {
+			System.out.print("\tnew Rect(" + Math.round(r.getV1().x) + "," + Math.round(r.getV1().y) + "," + Math.round(r.getV2().x) + "," + Math.round(r.getV2().y) + ")");
+			if(!r.equals(coinGrid.get(coinGrid.size()-1))) System.out.println(",");
+			else System.out.println();
+		}
+		System.out.println(");");
+		System.out.println("public static final List<Rect> playerGrid = List.of(");
+		for (Rect r:playerGrid) {
+			System.out.print("\tnew Rect(" + Math.round(r.getV1().x) + "," + Math.round(r.getV1().y) + "," + Math.round(r.getV2().x) + "," + Math.round(r.getV2().y) + ")");
+			if(!r.equals(playerGrid.get(playerGrid.size()-1))) System.out.println(",");
+			else System.out.println();
+		}
+		System.out.println(");");
+		System.out.println("public static final List<Rect> doorGrid = List.of(");
+		for (Rect r:doorGrid) {
+			System.out.print("\tnew Rect(" + Math.round(r.getV1().x) + "," + Math.round(r.getV1().y) + "," + Math.round(r.getV2().x) + "," + Math.round(r.getV2().y) + ")");
+			if(!r.equals(doorGrid.get(doorGrid.size()-1))) System.out.println(",");
+			else System.out.println();
+		}
+		System.out.println(");");
+		System.out.println("public static final List<List<Rect>> skeletonGrid = List.of(");
+		for (List<Rect> rl:skeletonGrid) {
+			System.out.println("\tList.of(");
+			for (Rect r:rl) {
+				System.out.print("\t\tnew Rect(" + Math.round(r.getV1().x) + "," + Math.round(r.getV1().y) + "," + Math.round(r.getV2().x) + "," + Math.round(r.getV2().y) + ")");
+				if(!r.equals(rl.get(rl.size()-1))) System.out.println(",");
+				else System.out.println();
+			}
+			if(!rl.equals(skeletonGrid.get(skeletonGrid.size()-1))) System.out.println("\t),");
+			else System.out.println("\t)");
+		}
+		System.out.println(");");
+	}
 }

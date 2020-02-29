@@ -17,7 +17,7 @@ public class FXContextTool implements GraphicsTool<Image> {
 	}
 
 	public void drawImage(Image img, double x, double y, double width, double height, int sx1, int sy1, int sx2, int sy2) {
-		gc.drawImage(img, x, y, width, height, sx1, sy1, sx2-sx1, sy2-sy1);
+		gc.drawImage(img, sx1, sy1, sx2-sx1, sy2-sy1, x, y, width, height);
 	}
 
 	@Override
