@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- Consider inlining CSS to reduce the number of requested files -->
+    <link type="text/css" rel="stylesheet" href="WebGames.css">
+
+    <!-- Any title is fine                         -->
+    <title>Brick Breaker</title>
+    
+    <!-- This script loads your compiled module.   -->
+    <!-- If you add any GWT meta tags, they must   -->
+    <!-- be added before this line.                -->
+    <script type="text/javascript" language="javascript" src="webgames/webgames.nocache.js"></script>
+
+    <style>
+      body {
+        background: #2e2e2e;
+        color: #eee;
+      }
+      .gwt-Button {
+        background: #444;
+        padding: 0.5em 1em;
+        margin: 1em 1em 0;
+        display: block;
+        -webkit-appearance: none;
+        border: 0px solid #000;
+        color: #eee;
+        box-shadow: 1px 2px 4px #0000005c;
+        border-radius: 4px;
+        font-size: 1.2em;
+      }
+      h1 {
+        color: #ddd;
+        font-style: italic;
+      }
+      div:not(#spiel) {
+        display: none;
+      }
+      div, tr {
+        display: flex;
+        justify-content: center;
+      }
+      canvas {
+        outline: none;
+        box-shadow: 1px 2px 14px 3px #00000052;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+    <noscript>
+      <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+        Your web browser must have JavaScript enabled
+        in order for this application to display correctly.
+      </div>
+    </noscript>
+    <h1>Brick Breaker</h1>
+    <div id="spiel"></div>
+  </body>
+</html>
+
+

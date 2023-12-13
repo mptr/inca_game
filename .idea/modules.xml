@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/framework/framework.iml" filepath="$PROJECT_DIR$/framework/framework.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gwtBackend/gwtBackend.iml" filepath="$PROJECT_DIR$/gwtBackend/gwtBackend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/javafxBackend/javafxBackend.iml" filepath="$PROJECT_DIR$/javafxBackend/javafxBackend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/swingBackend/swingBackend.iml" filepath="$PROJECT_DIR$/swingBackend/swingBackend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/inca_game.iml" filepath="$PROJECT_DIR$/inca_game.iml" />
     </modules>
   </component>
 </project>
